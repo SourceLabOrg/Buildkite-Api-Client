@@ -17,11 +17,17 @@
 
 package org.sourcelab.buildkite.api.client;
 
+import org.sourcelab.buildkite.api.client.http.Client;
+import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.request.PingRequest;
+import org.sourcelab.buildkite.api.client.request.Request;
+
 /**
  * API Client for Buildkite's REST Api.
  */
 public class BuildkiteClient {
     private final Configuration configuration;
+    private final Client httpClient;
 
     /**
      * Constructor.
@@ -29,5 +35,15 @@ public class BuildkiteClient {
      */
     public BuildkiteClient(final Configuration configuration) {
         this.configuration = configuration;
+        this.httpClient = configuration.getClientFactory().createClient(configuration);
+    }
+
+    public String ping() {
+        return executeRequest(new PingRequest());
+    }
+
+    private <T> T executeRequest(final Request<T> request) {
+        final HttpResult result = httpClient.executeRequest(request);
+        return request.parseResponse(result);
     }
 }

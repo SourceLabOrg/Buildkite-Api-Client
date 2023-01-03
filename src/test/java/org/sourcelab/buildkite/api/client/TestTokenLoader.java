@@ -46,17 +46,22 @@ public class TestTokenLoader {
     private Optional<String> loadFromProperties(final String filename)
     {
         try (final InputStream inputStream = TestTokenLoader.class.getClassLoader().getResourceAsStream(filename)) {
+            if (inputStream == null) {
+                return Optional.empty();
+            }
+
             // Look in test.env file
             final Properties properties = new Properties();
             properties.load(inputStream);
 
-            if (properties.contains(ENV_NAME)) {
+            if (properties.containsKey(ENV_NAME)) {
                 final Object token = properties.get(ENV_NAME);
                 if (token instanceof String && ((String) token).trim().length() > 0) {
                     return Optional.of((String) ((String) token).trim());
                 }
             }
         } catch (IOException e) {
+            e.getMessage();
         }
         return Optional.empty();
     }

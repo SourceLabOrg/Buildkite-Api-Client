@@ -17,11 +17,16 @@
 
 package org.sourcelab.buildkite.api.client;
 
+import org.sourcelab.buildkite.api.client.http.ClientFactory;
+import org.sourcelab.buildkite.api.client.http.DefaultClientFactory;
+
 /**
  * Configuration builder for {@see Configuration}.
  */
 public final class ConfigurationBuilder {
     private String apiToken = null;
+    private String apiUrl = "https://api.buildkite.com";
+    private ClientFactory clientFactory = new DefaultClientFactory();
 
     /**
      * Constructor.
@@ -34,8 +39,18 @@ public final class ConfigurationBuilder {
      * @param apiToken value to set.
      * @return self.
      */
-    public ConfigurationBuilder withApiToken(String apiToken) {
+    public ConfigurationBuilder withApiToken(final String apiToken) {
         this.apiToken = apiToken;
+        return this;
+    }
+
+    /**
+     * Override the underlying http client library.
+     * @param clientFactory Supply your own Client Factory implementation.
+     * @return self.
+     */
+    public ConfigurationBuilder withClientFactory(final ClientFactory clientFactory) {
+        this.clientFactory = clientFactory;
         return this;
     }
 
@@ -44,8 +59,14 @@ public final class ConfigurationBuilder {
      * @throws IllegalStateException if improper values defined.
      */
     private void validate() {
-        if (apiToken == null) {
+        if (apiToken == null || apiToken.trim().isEmpty()) {
             throw new IllegalStateException("The 'ApiToken' property must be configured.");
+        }
+        if (clientFactory == null) {
+            throw new IllegalStateException("The 'ClientFactory' property must be configured.");
+        }
+        if (apiUrl == null || apiUrl.trim().isEmpty()) {
+            throw new IllegalStateException("The 'ApiUrl' property must be configured.");
         }
     }
 
@@ -56,6 +77,6 @@ public final class ConfigurationBuilder {
      */
     public Configuration build() {
         validate();
-        return new Configuration(apiToken);
+        return new Configuration(apiToken, apiUrl, clientFactory);
     }
 }

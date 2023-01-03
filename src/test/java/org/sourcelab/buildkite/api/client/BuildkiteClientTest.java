@@ -19,12 +19,15 @@ package org.sourcelab.buildkite.api.client;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class BuildkiteClientTest {
 
+    private static Logger logger = LoggerFactory.getLogger(BuildkiteClientTest.class);
+
     private Configuration configuration;
+    private BuildkiteClient client;
 
     @BeforeEach
     void setUp() {
@@ -34,11 +37,14 @@ class BuildkiteClientTest {
         configuration = Configuration.newBuilder()
             .withApiToken(token)
             .build();
+
+        client = new BuildkiteClient(configuration);
     }
 
     @Test
-    private void test()
+    void ping()
     {
-        configuration.getApiToken();
+        final String result = client.ping();
+        logger.info("Result: {}", result);
     }
 }
