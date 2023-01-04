@@ -21,6 +21,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sourcelab.buildkite.api.client.response.PingResponse;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class BuildkiteClientTest {
 
@@ -41,10 +44,16 @@ class BuildkiteClientTest {
         client = new BuildkiteClient(configuration);
     }
 
+    /**
+     * Sanity test the 'ping' request.
+     */
     @Test
-    void ping()
-    {
-        final String result = client.ping();
+    void ping() {
+        final PingResponse result = client.ping();
         logger.info("Result: {}", result);
+
+        assertNotNull(result.getMessage());
+        assertFalse(result.getMessage().isEmpty());
+        assertNotEquals(0, result.getTimestamp());
     }
 }

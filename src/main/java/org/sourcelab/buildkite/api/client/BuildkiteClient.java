@@ -21,6 +21,7 @@ import org.sourcelab.buildkite.api.client.http.Client;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.request.PingRequest;
 import org.sourcelab.buildkite.api.client.request.Request;
+import org.sourcelab.buildkite.api.client.response.PingResponse;
 
 /**
  * API Client for Buildkite's REST Api.
@@ -38,7 +39,7 @@ public class BuildkiteClient {
         this.httpClient = configuration.getClientFactory().createClient(configuration);
     }
 
-    public String ping() {
+    public PingResponse ping() {
         return executeRequest(new PingRequest());
     }
 

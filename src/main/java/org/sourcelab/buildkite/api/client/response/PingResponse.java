@@ -1,10 +1,19 @@
 package org.sourcelab.buildkite.api.client.response;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PingResponse {
     private final String message;
     private final long timestamp;
 
-    public PingResponse(final String message, final long timestamp) {
+    /**
+     * Constructor.
+     * @param message Message value.
+     * @param timestamp Timestamp value.
+     */
+    @JsonCreator
+    public PingResponse(@JsonProperty("message") final String message, @JsonProperty("timestamp") final long timestamp) {
         this.message = message;
         this.timestamp = timestamp;
     }
