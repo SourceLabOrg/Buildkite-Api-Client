@@ -23,10 +23,9 @@ import org.sourcelab.buildkite.api.client.exception.InvalidAllowedIpAddressExcep
 import org.sourcelab.buildkite.api.client.exception.NotFoundException;
 import org.sourcelab.buildkite.api.client.http.Client;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.request.AccessTokenRequest;
-import org.sourcelab.buildkite.api.client.request.PingRequest;
-import org.sourcelab.buildkite.api.client.request.Request;
+import org.sourcelab.buildkite.api.client.request.*;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 import org.sourcelab.buildkite.api.client.response.parser.ErrorResponseParser;
@@ -68,8 +67,30 @@ public class BuildkiteClient {
      * @return Details about the current AccessToken.
      * @throws BuildkiteException if API returns an error response.
      */
-    public AccessTokenResponse accessToken() throws BuildkiteException {
-        return executeRequest(new AccessTokenRequest());
+    public AccessTokenResponse getAccessToken() throws BuildkiteException {
+        return executeRequest(new GetAccessTokenRequest());
+    }
+
+    /**
+     * Deletes/Revokes the current AccessToken.
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/access-token#revoke-the-current-token">https://buildkite.com/docs/apis/rest-api/access-token#revoke-the-current-token</a>
+     *
+     * @return Details about the current AccessToken.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public boolean deleteAccessToken() throws BuildkiteException {
+        return executeRequest(new DeleteAccessTokenRequest());
+    }
+
+    /**
+     * Retrieves the current user associated with the current access token.
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/user#get-the-current-user">https://buildkite.com/docs/apis/rest-api/user#get-the-current-user</a>
+     *
+     * @return Details about the current User.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public CurrentUserResponse getUser() throws BuildkiteException {
+        return executeRequest(new GetUserRequest());
     }
 
     /**
@@ -85,7 +106,7 @@ public class BuildkiteClient {
         final HttpResult result = httpClient.executeRequest(request);
 
         // Handle Errors based on HttpCode.
-        if (result.getStatus() != 200) {
+        if (result.getStatus() != 200 && result.getStatus() != 204) {
             handleError(result);
         }
 
@@ -133,7 +154,7 @@ public class BuildkiteClient {
                 );
             default:
                 throw new BuildkiteException(
-                    errorMessage == null ? "Unknown/Unhandled Error" : errorMessage
+                    errorMessage == null ? "Unknown/Unhandled Error HttpCode: " + errorResult.getStatus() : errorMessage
                 );
         }
     }

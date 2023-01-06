@@ -17,9 +17,17 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
-/**
- * Represents the various Http Request Methods.
- */
-public enum HttpMethod {
-    GET, POST, PUT, DELETE;
+import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
+import org.sourcelab.buildkite.api.client.response.parser.CurrentUserResponseParser;
+import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
+
+public class GetUserRequest extends GetRequest<CurrentUserResponse> {
+    public String getPath() {
+        return "/v2/user";
+    }
+
+    @Override
+    public ResponseParser<CurrentUserResponse> getResponseParser() {
+        return new CurrentUserResponseParser();
+    }
 }

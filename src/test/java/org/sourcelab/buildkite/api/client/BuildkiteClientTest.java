@@ -30,14 +30,15 @@ import org.sourcelab.buildkite.api.client.http.ClientFactory;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.request.HttpMethod;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class BuildkiteClientTest {
 
@@ -79,7 +80,7 @@ public class BuildkiteClientTest {
 
         // Make request
         final InvalidAccessTokenException thrownException =
-            assertThrows(InvalidAccessTokenException.class, () -> client.accessToken());
+            assertThrows(InvalidAccessTokenException.class, () -> client.getAccessToken());
 
         // Verify error message was populated.
         assertEquals("invalid token exception message", thrownException.getMessage());
@@ -97,7 +98,7 @@ public class BuildkiteClientTest {
 
         // Make request
         final InvalidAllowedIpAddressException thrownException =
-                assertThrows(InvalidAllowedIpAddressException.class, () -> client.accessToken());
+                assertThrows(InvalidAllowedIpAddressException.class, () -> client.getAccessToken());
 
         // Verify error message was populated.
         assertTrue(thrownException.getMessage().contains("API requested from an IP address not specifically allowed by your AccessToken"));
@@ -114,7 +115,7 @@ public class BuildkiteClientTest {
 
         // Make request
         final NotFoundException thrownException =
-                assertThrows(NotFoundException.class, () -> client.accessToken());
+                assertThrows(NotFoundException.class, () -> client.getAccessToken());
 
         // Verify error message was populated.
         assertTrue(thrownException.getMessage().contains("Not Found"));
@@ -146,7 +147,7 @@ public class BuildkiteClientTest {
      * Verifies the AccessToken request and response parsing.
      */
     @Test
-    void accessToken() {
+    void getAccessToken() {
         // Setup mock expectations.
         setupMockResponse(
             "/v2/access-token",
@@ -156,7 +157,7 @@ public class BuildkiteClientTest {
         );
 
         // Call method under test.
-        final AccessTokenResponse response = client.accessToken();
+        final AccessTokenResponse response = client.getAccessToken();
 
         // Verify response.
         assertNotNull(response);
@@ -169,6 +170,52 @@ public class BuildkiteClientTest {
     }
 
     /**
+     * Verifies the delete AccessToken request and response parsing.
+     */
+    @Test
+    void deleteAccessToken() {
+        // Setup mock expectations.
+        setupMockResponseStr(
+            "/v2/access-token",
+            HttpMethod.DELETE,
+            204,
+            ""
+        );
+
+        // Call method under test.
+        final boolean response = client.deleteAccessToken();
+
+        // Verify response.
+        assertTrue(response);
+    }
+
+    /**
+     * Verifies the get current user request and response parsing.
+     */
+    @Test
+    void getUser() {
+        // Setup mock expectations.
+        setupMockResponse(
+                "/v2/user",
+                HttpMethod.GET,
+                200,
+                "user.json"
+        );
+
+        // Call method under test.
+        final CurrentUserResponse response = client.getUser();
+
+        // Verify response.
+        assertNotNull(response);
+        assertEquals("123", response.getId());
+        assertEquals("first.last@email.com", response.getEmail());
+        assertEquals("First Last", response.getName());
+        assertEquals("https://www.gravatar.com/avatar/ABC", response.getAvatarUrl());
+        assertEquals("abc==", response.getGraphqlId());
+        assertEquals("2023-01-03T06:06:42.765Z[UTC]", response.getCreatedAt().toString());
+    }
+
+    /**
      * For setting up a mocked response.
      *
      * @param requestedPath The requested Path.
@@ -178,7 +225,18 @@ public class BuildkiteClientTest {
      */
     private void setupMockResponse(final String requestedPath, final HttpMethod requestedMethod, final int httpCode, final String responseFile) {
         final String responseStr = readFile(responseFile);
+        setupMockResponseStr(requestedPath, requestedMethod, httpCode, responseStr);
+    }
 
+    /**
+     * For setting up a mocked response.
+     *
+     * @param requestedPath The requested Path.
+     * @param requestedMethod The requested method.
+     * @param httpCode What http code to respond with.
+     * @param responseStr The response string to return.
+     */
+    private void setupMockResponseStr(final String requestedPath, final HttpMethod requestedMethod, final int httpCode, final String responseStr) {
         // Setup mock client to return http code 403
         when(mockHttpClient.executeRequest(argThat(requestArg -> {
             assertEquals(requestedPath, requestArg.getPath());

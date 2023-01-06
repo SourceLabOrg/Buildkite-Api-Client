@@ -15,11 +15,15 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.request;
+package org.sourcelab.buildkite.api.client.response.parser;
 
-/**
- * Represents the various Http Request Methods.
- */
-public enum HttpMethod {
-    GET, POST, PUT, DELETE;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
+
+public class CurrentUserResponseParser implements ResponseParser<CurrentUserResponse> {
+    @Override
+    public CurrentUserResponse parseResponse(final HttpResult result) throws JsonProcessingException {
+        return JacksonFactory.newInstance().readValue(result.getContent(), CurrentUserResponse.class);
+    }
 }

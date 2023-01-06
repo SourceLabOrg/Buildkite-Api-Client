@@ -15,11 +15,21 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.request;
+package org.sourcelab.buildkite.api.client.response.parser;
+
+import org.sourcelab.buildkite.api.client.http.HttpResult;
+
+import java.io.IOException;
 
 /**
- * Represents the various Http Request Methods.
+ * Parses 204 response codes into Booleans.
  */
-public enum HttpMethod {
-    GET, POST, PUT, DELETE;
+public class Http204ResponseParser implements ResponseParser<Boolean> {
+    @Override
+    public Boolean parseResponse(final HttpResult result) throws IOException {
+        if (result.getStatus() == 204) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -17,17 +17,14 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
-import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
-import org.sourcelab.buildkite.api.client.response.parser.AccessTokenResponseParser;
-import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
-
-public class AccessTokenRequest extends GetRequest<AccessTokenResponse> {
-    public String getPath() {
-        return "/v2/access-token";
-    }
-
+/**
+ * Abstract representation of a DELETE http request.
+ *
+ * @param <T> The parsed response object from the request.
+ */
+public abstract class DeleteRequest<T> implements Request<T> {
     @Override
-    public ResponseParser<AccessTokenResponse> getResponseParser() {
-        return new AccessTokenResponseParser();
+    public HttpMethod getMethod() {
+        return HttpMethod.DELETE;
     }
 }

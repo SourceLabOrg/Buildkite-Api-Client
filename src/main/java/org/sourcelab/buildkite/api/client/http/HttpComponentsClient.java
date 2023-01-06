@@ -17,10 +17,12 @@
 
 package org.sourcelab.buildkite.api.client.http;
 
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.ParseException;
@@ -80,8 +82,10 @@ public class HttpComponentsClient implements Client {
             switch (request.getMethod()) {
                 case GET:
                     return executeGetRequest(request, httpClient);
+                case DELETE:
+                    return executeDeleteRequest(request, httpClient);
                 default:
-                    throw new IllegalArgumentException("Invalid HttpType");
+                    throw new IllegalArgumentException("Invalid HttpType: " + request.getMethod());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -91,11 +95,27 @@ public class HttpComponentsClient implements Client {
     private HttpResult executeGetRequest(final Request request, final CloseableHttpClient httpClient) {
         final String path = configuration.getApiUrl() + request.getPath();
         final HttpGet httpGet = new HttpGet(path);
+        return submitRequest(httpGet, httpClient);
+    }
 
-        try (final CloseableHttpResponse response = httpClient.execute(httpGet)) {
+    private HttpResult executeDeleteRequest(final Request request, final CloseableHttpClient httpClient) {
+        final String path = configuration.getApiUrl() + request.getPath();
+        final HttpDelete httpDelete = new HttpDelete(path);
+        return submitRequest(httpDelete, httpClient);
+    }
+
+    private HttpResult submitRequest(final ClassicHttpRequest httpRequest, final CloseableHttpClient httpClient) {
+        try (final CloseableHttpResponse response = httpClient.execute(httpRequest)) {
             final HttpEntity entity = response.getEntity();
-            final HttpResult result = new HttpResult(response.getCode(), EntityUtils.toString(entity));
-            EntityUtils.consume(entity);
+            final String responseStr;
+            if (entity != null) {
+                responseStr = EntityUtils.toString(entity);
+                EntityUtils.consume(entity);
+            } else {
+                responseStr = "";
+            }
+
+            final HttpResult result = new HttpResult(response.getCode(), responseStr);
             return result;
         } catch (final IOException | ParseException e) {
             throw new HttpRequestException(e.getMessage(), e);

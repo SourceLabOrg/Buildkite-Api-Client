@@ -17,9 +17,16 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
-/**
- * Represents the various Http Request Methods.
- */
-public enum HttpMethod {
-    GET, POST, PUT, DELETE;
+import org.sourcelab.buildkite.api.client.response.parser.Http204ResponseParser;
+import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
+
+public class DeleteAccessTokenRequest extends DeleteRequest<Boolean> {
+    public String getPath() {
+        return "/v2/access-token";
+    }
+
+    @Override
+    public ResponseParser<Boolean> getResponseParser() {
+        return new Http204ResponseParser();
+    }
 }
