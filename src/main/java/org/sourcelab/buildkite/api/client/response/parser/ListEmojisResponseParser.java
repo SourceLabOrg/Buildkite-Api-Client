@@ -17,38 +17,23 @@
 
 package org.sourcelab.buildkite.api.client.response.parser;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.response.Build;
-import org.sourcelab.buildkite.api.client.response.PagingLinks;
-import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.Emoji;
+import org.sourcelab.buildkite.api.client.response.PingResponse;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class ListBuildsResponseParser implements ResponseParser<ListBuildsResponse> {
-    private static final Logger logger = LoggerFactory.getLogger(ListBuildsResponseParser.class);
-
+/**
+ * Parses responses from the "Hello World" Api end point.
+ */
+public class ListEmojisResponseParser implements ResponseParser<List<Emoji>> {
     @Override
-    public ListBuildsResponse parseResponse(final HttpResult result) throws JsonProcessingException {
-        //logger.info(result.getContent());
-
-        final PagingLinks pagingLinks;
-        if (result.getHttpHeaders().hasHeader("Link")) {
-            // Parse out the link header.
-            pagingLinks = PagingLinks.newBuilder()
-                .fromHeaderLine(result.getHttpHeaders().getHeader("Link"))
-                .build();
-        } else {
-            pagingLinks = PagingLinks.newBuilder().build();
-        }
-
-        final Build[] builds = JacksonFactory.newInstance().readValue(result.getContent(), Build[].class);
-
-        // Construct response.
-        return new ListBuildsResponse(pagingLinks, Arrays.asList(builds));
+    public List<Emoji> parseResponse(final HttpResult result) throws IOException {
+        final Emoji[] emojis = JacksonFactory.newInstance().readValue(result.getContent(), Emoji[].class);
+        return Arrays.stream(emojis).collect(Collectors.toList());
     }
 }

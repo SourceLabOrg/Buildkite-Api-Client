@@ -30,11 +30,14 @@ public class Pipeline {
     private final String graphqlId;
     private final String url;
     private final String name;
+    private final String description;
     private final String slug;
     private final String repository;
+    private final String clusterId;
 
     private final boolean skipQueuedBranchBuilds;
     private final boolean cancelRunningBranchBuilds;
+    private final boolean allowRebuilds;
 
     private final String buildsUrl;
     private final String badgeUrl;
@@ -53,32 +56,38 @@ public class Pipeline {
      * Constructor.
      */
     public Pipeline(
-        @JsonProperty("id") final String id,
-        @JsonProperty("graphql_id") final String graphqlId,
-        @JsonProperty("url") final String url,
-        @JsonProperty("name") final String name,
-        @JsonProperty("slug") final String slug,
-        @JsonProperty("repository") final String repository,
-        @JsonProperty("skip_queued_branch_builds") final Boolean skipQueuedBranchBuilds,
-        @JsonProperty("cancel_running_branch_builds") final Boolean cancelRunningBranchBuilds,
-        @JsonProperty("builds_url") final String buildsUrl,
-        @JsonProperty("badge_url") final String badgeUrl,
-        @JsonProperty("created_at") final ZonedDateTime createdAt,
-        @JsonProperty("scheduled_builds_count") final Long scheduledBuildsCount,
-        @JsonProperty("running_builds_count") final Long runningBuildsCount,
-        @JsonProperty("scheduled_jobs_count") final Long scheduledJobsCount,
-        @JsonProperty("running_jobs_count") final Long runningJobsCount,
-        @JsonProperty("waiting_jobs_count") final Long waitingJobsCount,
-        @JsonProperty("provider") final Provider provider
+            @JsonProperty("id") final String id,
+            @JsonProperty("graphql_id") final String graphqlId,
+            @JsonProperty("url") final String url,
+            @JsonProperty("name") final String name,
+            @JsonProperty("description") final String description,
+            @JsonProperty("slug") final String slug,
+            @JsonProperty("repository") final String repository,
+            @JsonProperty("cluster_id") final String clusterId,
+            @JsonProperty("skip_queued_branch_builds") final Boolean skipQueuedBranchBuilds,
+            @JsonProperty("cancel_running_branch_builds") final Boolean cancelRunningBranchBuilds,
+            @JsonProperty("allow_rebuilds") final Boolean allowRebuilds,
+            @JsonProperty("builds_url") final String buildsUrl,
+            @JsonProperty("badge_url") final String badgeUrl,
+            @JsonProperty("created_at") final ZonedDateTime createdAt,
+            @JsonProperty("scheduled_builds_count") final Long scheduledBuildsCount,
+            @JsonProperty("running_builds_count") final Long runningBuildsCount,
+            @JsonProperty("scheduled_jobs_count") final Long scheduledJobsCount,
+            @JsonProperty("running_jobs_count") final Long runningJobsCount,
+            @JsonProperty("waiting_jobs_count") final Long waitingJobsCount,
+            @JsonProperty("provider") final Provider provider
     ) {
         this.id = id;
         this.graphqlId = graphqlId;
         this.url = url;
         this.name = name;
+        this.description = description;
         this.slug = slug;
         this.repository = repository;
+        this.clusterId = clusterId;
         this.skipQueuedBranchBuilds = skipQueuedBranchBuilds == null ? false : skipQueuedBranchBuilds;
         this.cancelRunningBranchBuilds = cancelRunningBranchBuilds == null ? false : cancelRunningBranchBuilds;
+        this.allowRebuilds = allowRebuilds == null ? false : allowRebuilds;
         this.buildsUrl = buildsUrl;
         this.badgeUrl = badgeUrl;
         this.createdAt = createdAt;
@@ -158,6 +167,18 @@ public class Pipeline {
         return provider;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public boolean isAllowRebuilds() {
+        return allowRebuilds;
+    }
+
     @Override
     public String toString() {
         return "Pipeline{"
@@ -165,10 +186,13 @@ public class Pipeline {
             + ", graphqlId='" + graphqlId + '\''
             + ", url='" + url + '\''
             + ", name='" + name + '\''
+            + ", description='" + description + '\''
             + ", slug='" + slug + '\''
             + ", repository='" + repository + '\''
+            + ", clusterId='" + clusterId + '\''
             + ", skipQueuedBranchBuilds=" + skipQueuedBranchBuilds
             + ", cancelRunningBranchBuilds=" + cancelRunningBranchBuilds
+            + ", allowRebuilds=" + allowRebuilds
             + ", buildsUrl='" + buildsUrl + '\''
             + ", badgeUrl='" + badgeUrl + '\''
             + ", createdAt=" + createdAt

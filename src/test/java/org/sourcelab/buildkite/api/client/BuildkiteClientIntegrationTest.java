@@ -27,8 +27,11 @@ import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
+import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -111,6 +114,18 @@ class BuildkiteClientIntegrationTest {
         assertNotNull(result);
         assertNotNull(result.getId());
         assertNotNull(result.getEmail());
+    }
+
+    /**
+     * Sanity test the 'listEmojis' request.
+     */
+    @Test
+    void listEmojis() {
+        final String orgIdSlug = "sourcelaborg";
+        final List<Emoji> result = client.listEmojis(orgIdSlug);
+        logger.info("Result: {}", result);
+
+        assertNotNull(result);
     }
 
     /**

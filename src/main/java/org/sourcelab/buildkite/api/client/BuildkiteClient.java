@@ -29,16 +29,19 @@ import org.sourcelab.buildkite.api.client.request.DeleteAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetUserRequest;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
+import org.sourcelab.buildkite.api.client.request.ListEmojisRequest;
 import org.sourcelab.buildkite.api.client.request.PingRequest;
 import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
+import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 import org.sourcelab.buildkite.api.client.response.parser.ErrorResponseParser;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * API Client for Buildkite's REST Api.
@@ -99,6 +102,15 @@ public class BuildkiteClient {
      */
     public CurrentUserResponse getUser() throws BuildkiteException {
         return executeRequest(new GetUserRequest());
+    }
+
+    /**
+     * List all of the Emojis defined in the given Organization.
+     * @param orgIdSlug Organization Id slug to retrieve list of emojis for.
+     * @return List of Emojis.
+     */
+    public List<Emoji> listEmojis(final String orgIdSlug) {
+        return executeRequest(new ListEmojisRequest(orgIdSlug));
     }
 
     public ListBuildsResponse listBuilds() {
