@@ -17,56 +17,189 @@
 
 package org.sourcelab.buildkite.api.client;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sourcelab.buildkite.api.client.exception.InvalidAccessTokenException;
+import org.sourcelab.buildkite.api.client.exception.InvalidAllowedIpAddressException;
+import org.sourcelab.buildkite.api.client.exception.NotFoundException;
+import org.sourcelab.buildkite.api.client.http.Client;
+import org.sourcelab.buildkite.api.client.http.ClientFactory;
+import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.request.HttpMethod;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class BuildkiteClientTest {
+public class BuildkiteClientTest {
 
     private static Logger logger = LoggerFactory.getLogger(BuildkiteClientTest.class);
 
+    private final String mockAccessToken = "Mock-Access-Token";
     private Configuration configuration;
     private BuildkiteClient client;
+    private Client mockHttpClient;
 
     @BeforeEach
     void setUp() {
-        // Load token from environment.
-        final String token = new TestTokenLoader().getTestToken();
 
+        mockHttpClient = mock(Client.class);
+
+        // Inject our mock underlying http client.
         configuration = Configuration.newBuilder()
-            .withApiToken(token)
-            .build();
+                .withApiToken(mockAccessToken)
+                .withClientFactory(new ClientFactory() {
+                    @Override
+                    public Client createClient(final Configuration configuration) {
+                        return mockHttpClient;
+                    }
+                })
+                .build();
 
         client = new BuildkiteClient(configuration);
     }
 
     /**
-     * Sanity test the 'ping' request.
+     * Verifies if the API returns http code 401, we throw the appropriate invalid access token
+     * exception.
      */
     @Test
-    void ping() {
-        final PingResponse result = client.ping();
-        logger.info("Result: {}", result);
+    void verify401Response_shouldThrowInvalidAccessTokenException() {
+        // Setup mock client to return http code 401
+        when(mockHttpClient.executeRequest(any()))
+            .thenReturn(new HttpResult(401, "{\"message\": \"invalid token exception message\"}"));
 
-        assertNotNull(result.getMessage());
-        assertFalse(result.getMessage().isEmpty());
-        assertNotEquals(0, result.getTimestamp());
+        // Make request
+        final InvalidAccessTokenException thrownException =
+            assertThrows(InvalidAccessTokenException.class, () -> client.accessToken());
+
+        // Verify error message was populated.
+        assertEquals("invalid token exception message", thrownException.getMessage());
     }
 
     /**
-     * Sanity test the 'ping' request.
+     * Verifies if the API returns http code 403, we throw the appropriate invalid ip address
+     * exception.
+     */
+    @Test
+    void verify403Response_shouldThrowInvalidAllowedIpAddressException() {
+        // Setup mock client to return http code 403
+        when(mockHttpClient.executeRequest(any()))
+                .thenReturn(new HttpResult(403, ""));
+
+        // Make request
+        final InvalidAllowedIpAddressException thrownException =
+                assertThrows(InvalidAllowedIpAddressException.class, () -> client.accessToken());
+
+        // Verify error message was populated.
+        assertTrue(thrownException.getMessage().contains("API requested from an IP address not specifically allowed by your AccessToken"));
+    }
+
+    /**
+     * Verifies if the API returns http code 404, we throw the appropriate not found exception
+     */
+    @Test
+    void verify404Response_shouldThrowInvalidAllowedIpAddressException() {
+        // Setup mock client to return http code 403
+        when(mockHttpClient.executeRequest(any()))
+            .thenReturn(new HttpResult(404, "{\"message\": \"Not Found\"}"));
+
+        // Make request
+        final NotFoundException thrownException =
+                assertThrows(NotFoundException.class, () -> client.accessToken());
+
+        // Verify error message was populated.
+        assertTrue(thrownException.getMessage().contains("Not Found"));
+    }
+
+    /**
+     * Verifies the ping request and response parsing.
+     */
+    @Test
+    void ping() {
+        // Setup mock expectations.
+        setupMockResponse(
+            "/",
+            HttpMethod.GET,
+            200,
+            "ping.json"
+        );
+
+        // Call method under test.
+        final PingResponse response = client.ping();
+
+        // Verify response.
+        assertNotNull(response);
+        assertEquals("\uD83D\uDEE0", response.getMessage());
+        assertEquals(1672974170, response.getTimestamp());
+    }
+
+    /**
+     * Verifies the AccessToken request and response parsing.
      */
     @Test
     void accessToken() {
-        final AccessTokenResponse result = client.accessToken();
-        logger.info("Result: {}", result);
+        // Setup mock expectations.
+        setupMockResponse(
+            "/v2/access-token",
+            HttpMethod.GET,
+            200,
+            "accessToken.json"
+        );
 
-        assertNotNull(result.getUuid());
-        assertFalse(result.getScopes().isEmpty());
+        // Call method under test.
+        final AccessTokenResponse response = client.accessToken();
+
+        // Verify response.
+        assertNotNull(response);
+        assertEquals("uuid-value-here", response.getUuid());
+        assertFalse(response.getScopes().isEmpty());
+        assertEquals(3, response.getScopes().size());
+        assertTrue(response.getScopes().contains("read_agents"));
+        assertTrue(response.getScopes().contains("write_agents"));
+        assertTrue(response.getScopes().contains("read_teams"));
+    }
+
+    /**
+     * For setting up a mocked response.
+     *
+     * @param requestedPath The requested Path.
+     * @param requestedMethod The requested method.
+     * @param httpCode What http code to respond with.
+     * @param responseFile What mock response file to load response for.
+     */
+    private void setupMockResponse(final String requestedPath, final HttpMethod requestedMethod, final int httpCode, final String responseFile) {
+        final String responseStr = readFile(responseFile);
+
+        // Setup mock client to return http code 403
+        when(mockHttpClient.executeRequest(argThat(requestArg -> {
+            assertEquals(requestedPath, requestArg.getPath());
+            assertEquals(requestedMethod, requestArg.getMethod());
+            return true;
+        })))
+        .thenReturn(new HttpResult(httpCode, responseStr));
+    }
+
+    /**
+     * Utility method to help load mock responses from resources.
+     * @param fileName file name to load from resources
+     * @return The contents of the file, as a UTF-8 string.
+     * @throws RuntimeException on error reading from resource file.
+     */
+    protected String readFile(final String fileName) {
+        final URL inputFile = getClass().getClassLoader().getResource("mockResponses/" + fileName);
+        try {
+            return IOUtils.toString(inputFile, StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

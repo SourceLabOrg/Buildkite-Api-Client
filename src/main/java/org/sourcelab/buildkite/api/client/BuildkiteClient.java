@@ -20,6 +20,7 @@ package org.sourcelab.buildkite.api.client;
 import org.sourcelab.buildkite.api.client.exception.BuildkiteException;
 import org.sourcelab.buildkite.api.client.exception.InvalidAccessTokenException;
 import org.sourcelab.buildkite.api.client.exception.InvalidAllowedIpAddressException;
+import org.sourcelab.buildkite.api.client.exception.NotFoundException;
 import org.sourcelab.buildkite.api.client.http.Client;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.request.AccessTokenRequest;
@@ -122,6 +123,13 @@ public class BuildkiteClient {
                             "API requested from an IP address not specifically allowed by your AccessToken. "
                             + "Check the 'Allowed IP Addresses' field on your Access Token"
                         : errorMessage
+                );
+            case 404:
+                throw new NotFoundException(
+                    errorMessage == null
+                            ?
+                            "The URL or Resource Request could not be found"
+                            : errorMessage
                 );
             default:
                 throw new BuildkiteException(

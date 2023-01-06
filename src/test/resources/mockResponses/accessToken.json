@@ -1,0 +1,4 @@
+{
+  "uuid": "uuid-value-here",
+  "scopes": ["read_agents", "write_agents", "read_teams"]
+}
