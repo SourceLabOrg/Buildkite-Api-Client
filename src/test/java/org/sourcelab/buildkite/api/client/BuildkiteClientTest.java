@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,5 +56,17 @@ class BuildkiteClientTest {
         assertNotNull(result.getMessage());
         assertFalse(result.getMessage().isEmpty());
         assertNotEquals(0, result.getTimestamp());
+    }
+
+    /**
+     * Sanity test the 'ping' request.
+     */
+    @Test
+    void accessToken() {
+        final AccessTokenResponse result = client.accessToken();
+        logger.info("Result: {}", result);
+
+        assertNotNull(result.getUuid());
+        assertFalse(result.getScopes().isEmpty());
     }
 }

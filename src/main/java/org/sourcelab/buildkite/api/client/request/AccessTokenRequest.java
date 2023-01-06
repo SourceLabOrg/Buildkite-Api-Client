@@ -15,38 +15,19 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.http;
+package org.sourcelab.buildkite.api.client.request;
 
-/**
- * Represents the Response from a Http Request.
- */
-public class HttpResult {
-    final int status;
-    final String content;
+import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.parser.AccessTokenResponseParser;
+import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 
-    /**
-     * Constructor.
-     * @param status Status code.
-     * @param content String representation of the response.
-     */
-    public HttpResult(final int status, final String content) {
-        this.status = status;
-        this.content = content;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getContent() {
-        return content;
+public class AccessTokenRequest extends GetRequest<AccessTokenResponse> {
+    public String getPath() {
+        return "/v2/access-token";
     }
 
     @Override
-    public String toString() {
-        return "HttpResult{"
-                + "status=" + status
-                + ", content='" + content + '\''
-                + '}';
+    public ResponseParser<AccessTokenResponse> getResponseParser() {
+        return new AccessTokenResponseParser();
     }
 }

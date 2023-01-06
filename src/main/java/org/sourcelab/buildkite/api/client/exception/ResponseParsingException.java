@@ -15,38 +15,28 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.http;
+package org.sourcelab.buildkite.api.client.exception;
 
 /**
- * Represents the Response from a Http Request.
+ * Thrown if the API responds with content that is unable to be parsed.
+ * This likely results from a bug in the Buildkite Api Client library, with it not understanding
+ * how to properly parse a given response.
  */
-public class HttpResult {
-    final int status;
-    final String content;
+public class ResponseParsingException extends BuildkiteException {
+    /**
+     * Constructor.
+     * @param message Error message.
+     */
+    public ResponseParsingException(final String message) {
+        super(message);
+    }
 
     /**
      * Constructor.
-     * @param status Status code.
-     * @param content String representation of the response.
+     * @param message Error message.
+     * @param cause Underlying exception.
      */
-    public HttpResult(final int status, final String content) {
-        this.status = status;
-        this.content = content;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    @Override
-    public String toString() {
-        return "HttpResult{"
-                + "status=" + status
-                + ", content='" + content + '\''
-                + '}';
+    public ResponseParsingException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

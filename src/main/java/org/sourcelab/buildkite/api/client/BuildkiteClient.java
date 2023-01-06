@@ -17,11 +17,20 @@
 
 package org.sourcelab.buildkite.api.client;
 
+import org.sourcelab.buildkite.api.client.exception.BuildkiteException;
+import org.sourcelab.buildkite.api.client.exception.InvalidAccessTokenException;
+import org.sourcelab.buildkite.api.client.exception.InvalidAllowedIpAddressException;
 import org.sourcelab.buildkite.api.client.http.Client;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.request.AccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.PingRequest;
 import org.sourcelab.buildkite.api.client.request.Request;
+import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
+import org.sourcelab.buildkite.api.client.response.parser.ErrorResponseParser;
+
+import java.io.IOException;
 
 /**
  * API Client for Buildkite's REST Api.
@@ -39,12 +48,85 @@ public class BuildkiteClient {
         this.httpClient = configuration.getClientFactory().createClient(configuration);
     }
 
-    public PingResponse ping() {
+    /**
+     * Make a 'test' or 'hello world' request to the Buildkite API.  Can be used to validate
+     * connectivity to the API.
+     * @see <a href="https://buildkite.com/docs/apis/rest-api">https://buildkite.com/docs/apis/rest-api</a>
+     *
+     * @return Response details from the ping request.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public PingResponse ping() throws BuildkiteException {
         return executeRequest(new PingRequest());
     }
 
-    private <T> T executeRequest(final Request<T> request) {
+    /**
+     * Retrieve details about the current AccessToken.
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/access-token">https://buildkite.com/docs/apis/rest-api/access-token</a>
+     *
+     * @return Details about the current AccessToken.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public AccessTokenResponse accessToken() throws BuildkiteException {
+        return executeRequest(new AccessTokenRequest());
+    }
+
+    /**
+     * Execute the given request, returning the parsed response, or throwing the appropriate
+     * exception if an error was returned from the API.
+     *
+     * @param <T> The parsed response object.
+     * @param request The request to execute.
+     * @return The parsed response object.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    private <T> T executeRequest(final Request<T> request) throws BuildkiteException {
         final HttpResult result = httpClient.executeRequest(request);
+
+        // Handle Errors based on HttpCode.
+        if (result.getStatus() != 200) {
+            handleError(result);
+        }
+
+        // Normal
         return request.parseResponse(result);
+    }
+
+    /**
+     * Handle error responses from the API by throwing the appropriate exception.
+     * @param errorResult Error response from REST API.
+     * @throws BuildkiteException relating to specific underlying API error.
+     */
+    private void handleError(final HttpResult errorResult) throws BuildkiteException {
+        // Attempt to parse error respone.
+        String errorMessage = null;
+        try {
+            final ErrorResponse errorResponse = new ErrorResponseParser().parseResponse(errorResult);
+            errorMessage = errorResponse.getMessage();
+        } catch (final IOException e) {
+            errorMessage = errorResult.getContent();
+        }
+        if (errorMessage != null && errorMessage.trim().isEmpty()) {
+            errorMessage = null;
+        }
+
+        switch (errorResult.getStatus()) {
+            case 401:
+                throw new InvalidAccessTokenException(
+                    errorMessage == null ? "Invalid Access Token" : errorMessage
+                );
+            case 403:
+                throw new InvalidAllowedIpAddressException(
+                    errorMessage == null
+                        ?
+                            "API requested from an IP address not specifically allowed by your AccessToken. "
+                            + "Check the 'Allowed IP Addresses' field on your Access Token"
+                        : errorMessage
+                );
+            default:
+                throw new BuildkiteException(
+                    errorMessage == null ? "Unknown/Unhandled Error" : errorMessage
+                );
+        }
     }
 }

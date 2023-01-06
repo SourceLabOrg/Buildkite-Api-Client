@@ -15,38 +15,38 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.http;
+package org.sourcelab.buildkite.api.client.response;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Represents the Response from a Http Request.
+ * Represents an Error response from the REST Api.
  */
-public class HttpResult {
-    final int status;
-    final String content;
+public class ErrorResponse {
+    private final String message;
 
     /**
      * Constructor.
-     * @param status Status code.
-     * @param content String representation of the response.
+     * @param message Error message.
      */
-    public HttpResult(final int status, final String content) {
-        this.status = status;
-        this.content = content;
+    @JsonCreator
+    public ErrorResponse(@JsonProperty("message") final String message) {
+        this.message = message;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public String getContent() {
-        return content;
+    /**
+     * Error message value.
+     * @return Error message value.
+     */
+    public String getMessage() {
+        return message;
     }
 
     @Override
     public String toString() {
-        return "HttpResult{"
-                + "status=" + status
-                + ", content='" + content + '\''
+        return "ErrorResponse{"
+                + "message='" + message + '\''
                 + '}';
     }
 }

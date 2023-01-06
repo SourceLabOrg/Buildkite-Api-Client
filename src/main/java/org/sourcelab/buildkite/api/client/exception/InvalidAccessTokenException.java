@@ -15,38 +15,17 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.http;
+package org.sourcelab.buildkite.api.client.exception;
 
 /**
- * Represents the Response from a Http Request.
+ * Thrown if the API responds with an invalid access token error.
  */
-public class HttpResult {
-    final int status;
-    final String content;
-
-    /**
+public class InvalidAccessTokenException extends BuildkiteException {
+     /**
      * Constructor.
-     * @param status Status code.
-     * @param content String representation of the response.
-     */
-    public HttpResult(final int status, final String content) {
-        this.status = status;
-        this.content = content;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    @Override
-    public String toString() {
-        return "HttpResult{"
-                + "status=" + status
-                + ", content='" + content + '\''
-                + '}';
+     * @param message Error message.
+      */
+    public InvalidAccessTokenException(final String message) {
+        super(message);
     }
 }

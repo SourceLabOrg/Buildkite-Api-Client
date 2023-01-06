@@ -15,38 +15,16 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.http;
+package org.sourcelab.buildkite.api.client.response.parser;
 
-/**
- * Represents the Response from a Http Request.
- */
-public class HttpResult {
-    final int status;
-    final String content;
+import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 
-    /**
-     * Constructor.
-     * @param status Status code.
-     * @param content String representation of the response.
-     */
-    public HttpResult(final int status, final String content) {
-        this.status = status;
-        this.content = content;
-    }
+import java.io.IOException;
 
-    public int getStatus() {
-        return status;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
+public class ErrorResponseParser implements ResponseParser<ErrorResponse> {
     @Override
-    public String toString() {
-        return "HttpResult{"
-                + "status=" + status
-                + ", content='" + content + '\''
-                + '}';
+    public ErrorResponse parseResponse(final HttpResult result) throws IOException {
+        return JacksonFactory.newInstance().readValue(result.getContent(), ErrorResponse.class);
     }
 }

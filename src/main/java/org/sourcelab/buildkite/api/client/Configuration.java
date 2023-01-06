@@ -19,11 +19,18 @@ package org.sourcelab.buildkite.api.client;
 
 import org.sourcelab.buildkite.api.client.http.ClientFactory;
 
+/**
+ * User supplied Configuration of the API Client.
+ */
 public class Configuration {
     private final String apiToken;
     private final String apiUrl;
     private final ClientFactory clientFactory;
 
+    /**
+     * Create a new Builder for creating Configuration instances.
+     * @return Builder for Configuration instances.
+     */
     public static ConfigurationBuilder newBuilder() {
         return new ConfigurationBuilder();
     }
@@ -31,11 +38,11 @@ public class Configuration {
     /**
      * Constructor.  Use {@see Configuration::newBuilder()}
      *
-     * @param apiToken      Set the configured Api Token.
-     * @param apiUrl
-     * @param clientFactory
+     * @param apiToken Set the configured Api Token.
+     * @param apiUrl Set the API Url.
+     * @param clientFactory Set the client factory.
      */
-    protected Configuration(final String apiToken, String apiUrl, ClientFactory clientFactory) {
+    protected Configuration(final String apiToken, final String apiUrl, final ClientFactory clientFactory) {
         this.apiToken = apiToken;
         this.apiUrl = apiUrl;
         this.clientFactory = clientFactory;
@@ -63,5 +70,14 @@ public class Configuration {
      */
     public ClientFactory getClientFactory() {
         return clientFactory;
+    }
+
+    @Override
+    public String toString() {
+        return "Configuration{"
+                + "apiToken='XXXXXXX'"
+                + ", apiUrl='" + apiUrl + '\''
+                + ", clientFactory=" + clientFactory
+                + '}';
     }
 }

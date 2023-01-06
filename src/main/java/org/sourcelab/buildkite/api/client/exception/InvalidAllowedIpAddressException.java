@@ -15,38 +15,18 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.http;
+package org.sourcelab.buildkite.api.client.exception;
 
 /**
- * Represents the Response from a Http Request.
+ * Thrown if the API was requested from an IP address not specifically allowed by the API Token.
+ * Check the 'Allowed IP Addresses' field on the API Token.
  */
-public class HttpResult {
-    final int status;
-    final String content;
-
-    /**
+public class InvalidAllowedIpAddressException extends BuildkiteException {
+     /**
      * Constructor.
-     * @param status Status code.
-     * @param content String representation of the response.
-     */
-    public HttpResult(final int status, final String content) {
-        this.status = status;
-        this.content = content;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    @Override
-    public String toString() {
-        return "HttpResult{"
-                + "status=" + status
-                + ", content='" + content + '\''
-                + '}';
+     * @param message Error message.
+      */
+    public InvalidAllowedIpAddressException(final String message) {
+        super(message);
     }
 }

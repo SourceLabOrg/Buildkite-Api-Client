@@ -15,38 +15,27 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.http;
+package org.sourcelab.buildkite.api.client.exception;
 
 /**
- * Represents the Response from a Http Request.
+ * Top level Exception class from which all more specific exceptions relating to the
+ * Buildkite Api Client library extend from.
  */
-public class HttpResult {
-    final int status;
-    final String content;
+public class BuildkiteException extends RuntimeException {
+    /**
+     * Constructor.
+     * @param message Error message.
+     */
+    public BuildkiteException(final String message) {
+        super(message);
+    }
 
     /**
      * Constructor.
-     * @param status Status code.
-     * @param content String representation of the response.
+     * @param message Error message.
+     * @param cause Underlying exception/cause.
      */
-    public HttpResult(final int status, final String content) {
-        this.status = status;
-        this.content = content;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    @Override
-    public String toString() {
-        return "HttpResult{"
-                + "status=" + status
-                + ", content='" + content + '\''
-                + '}';
+    public BuildkiteException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

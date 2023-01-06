@@ -20,38 +20,56 @@ package org.sourcelab.buildkite.api.client.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- * Represents the response from a "Hello World" request to the Buildkite API.
- * @see <a href="https://buildkite.com/docs/apis/rest-api">https://buildkite.com/docs/apis/rest-api</a>
+ * Represents response from the AccessToken API Endpoint.
+ * @see <a href="https://buildkite.com/docs/apis/rest-api/access-token">https://buildkite.com/docs/apis/rest-api/access-token</a>
  */
-public class PingResponse {
-    private final String message;
-    private final long timestamp;
+public class AccessTokenResponse {
+    private final String uuid;
+    private final List<String> scopes;
 
     /**
      * Constructor.
-     * @param message Message value.
-     * @param timestamp Timestamp value.
+     * @param uuid UUID value.
+     * @param scopes Scopes value.
      */
     @JsonCreator
-    public PingResponse(@JsonProperty("message") final String message, @JsonProperty("timestamp") final long timestamp) {
-        this.message = message;
-        this.timestamp = timestamp;
+    public AccessTokenResponse(@JsonProperty("uuid") final String uuid, @JsonProperty("scopes") final List<String> scopes) {
+        this.uuid = uuid;
+        if (scopes == null) {
+            this.scopes = Collections.unmodifiableList(new ArrayList<>());
+        } else {
+            // Sort the incoming scopes.
+            this.scopes = Collections.unmodifiableList(scopes.stream().sorted().collect(Collectors.toList()));
+        }
     }
 
-    public String getMessage() {
-        return message;
+    /**
+     * The UUID value associated with the current access token.
+     * @return The UUID value associated with the current access token.
+     */
+    public String getUuid() {
+        return uuid;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    /**
+     * Scopes associated with the current access token.
+     * @return Scopes associated with the current access token.
+     */
+    public List<String> getScopes() {
+        return scopes;
     }
 
     @Override
     public String toString() {
-        return "PingResponse{"
-                + "message='" + message + '\''
-                + ", timestamp=" + timestamp
-                + '}';
+        return "AccessTokenResponse{"
+            + "uuid='" + uuid + '\''
+            + ", scopes=" + scopes
+            + '}';
     }
 }
