@@ -109,4 +109,15 @@ class BuildkiteClientIntegrationTest {
         assertNotNull(result.getId());
         assertNotNull(result.getEmail());
     }
+
+    /**
+     * Sanity test the 'getUser' request.
+     */
+    @Test
+    void listBuilds() {
+        final String result = client.listBuilds();
+        logger.info("Result: {}", result);
+
+        assertNotNull(result);
+    }
 }

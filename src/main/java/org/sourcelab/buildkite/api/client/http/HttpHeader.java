@@ -17,17 +17,33 @@
 
 package org.sourcelab.buildkite.api.client.http;
 
-import org.sourcelab.buildkite.api.client.request.Request;
+import java.util.Objects;
 
 /**
- * Abstraction around underlying Http Client library.  Allows for replacing the
- * underlying library in the future if needed.
+ * Abstraction for HttpHeader.
  */
-public interface Client {
-    /**
-     * Execute the supplied request and return the server's response.
-     * @param request The request to execute.
-     * @return The servers response.
-     */
-    HttpResult executeRequest(final Request request);
+public class HttpHeader {
+    private final String name;
+    private final String value;
+
+    public HttpHeader(final String name, final String value) {
+        this.name = Objects.requireNonNull(name);
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return "HttpHeader{"
+            + "name='" + name + '\''
+            + ", value='" + value + '\''
+            + '}';
+    }
 }

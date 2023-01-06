@@ -15,19 +15,57 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.http;
-
-import org.sourcelab.buildkite.api.client.request.Request;
+package org.sourcelab.buildkite.api.client.request;
 
 /**
- * Abstraction around underlying Http Client library.  Allows for replacing the
- * underlying library in the future if needed.
+ * Paging options.
  */
-public interface Client {
+public class PageOptions {
+    private final int page;
+    private final int perPage;
+
+    private static final PageOptions DEFAULT = new PageOptions(1, 30);
+
     /**
-     * Execute the supplied request and return the server's response.
-     * @param request The request to execute.
-     * @return The servers response.
+     * Default instance with sane default properties.
+     * @return Default instance with sane default properties.
      */
-    HttpResult executeRequest(final Request request);
+    public static PageOptions getDefault() {
+        return DEFAULT;
+    }
+
+    /**
+     * Constructor.
+     * @param page Which page to request.
+     * @param perPage How many entries per page.
+     */
+    public PageOptions(int page, int perPage) {
+        if (page < 0) {
+            page = 1;
+        }
+        this.page = page;
+
+        if (perPage < 0) {
+            perPage = 1;
+        } else if (perPage > 100) {
+            perPage = 100;
+        }
+        this.perPage = perPage;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public int getPerPage() {
+        return perPage;
+    }
+
+    @Override
+    public String toString() {
+        return "PageOptions{"
+                + "page=" + page
+                + ", perPage=" + perPage
+                + '}';
+    }
 }

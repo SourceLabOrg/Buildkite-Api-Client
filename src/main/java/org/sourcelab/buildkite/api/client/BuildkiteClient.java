@@ -23,9 +23,12 @@ import org.sourcelab.buildkite.api.client.exception.InvalidAllowedIpAddressExcep
 import org.sourcelab.buildkite.api.client.exception.NotFoundException;
 import org.sourcelab.buildkite.api.client.http.Client;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.request.BuildFilters;
+import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.DeleteAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetUserRequest;
+import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.request.PingRequest;
 import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
@@ -95,6 +98,18 @@ public class BuildkiteClient {
      */
     public CurrentUserResponse getUser() throws BuildkiteException {
         return executeRequest(new GetUserRequest());
+    }
+
+    public String listBuilds() {
+        return listBuilds(BuildFilters.newBuilder().build());
+    }
+
+    public String listBuilds(final BuildFiltersBuilder filtersBuilder) {
+        return listBuilds(filtersBuilder.build());
+    }
+
+    public String listBuilds(final BuildFilters filters) {
+        return executeRequest(new ListBuildsRequest(filters));
     }
 
     /**

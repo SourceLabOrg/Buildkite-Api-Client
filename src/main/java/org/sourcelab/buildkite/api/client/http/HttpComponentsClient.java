@@ -17,6 +17,7 @@
 
 package org.sourcelab.buildkite.api.client.http;
 
+import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -28,11 +29,17 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.net.URIBuilder;
 import org.sourcelab.buildkite.api.client.Configuration;
 import org.sourcelab.buildkite.api.client.exception.HttpRequestException;
 import org.sourcelab.buildkite.api.client.request.Request;
+import org.sourcelab.buildkite.api.client.request.RequestParameter;
 
+import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,9 +100,26 @@ public class HttpComponentsClient implements Client {
     }
 
     private HttpResult executeGetRequest(final Request request, final CloseableHttpClient httpClient) {
-        final String path = configuration.getApiUrl() + request.getPath();
-        final HttpGet httpGet = new HttpGet(path);
-        return submitRequest(httpGet, httpClient);
+        try {
+            // Construct URI including our request parameters.
+            final String path = configuration.getApiUrl() + request.getPath();
+            final URIBuilder uriBuilder = new URIBuilder(path)
+                    .setCharset(StandardCharsets.UTF_8);
+
+            // Attach request parameters
+            for (final RequestParameter requestParameter : request.getRequestParameters().getParameters()) {
+                for (final String value : requestParameter.getValues()) {
+                    uriBuilder.setParameter(requestParameter.getName(), value);
+                }
+            }
+
+            final HttpGet httpGet = new HttpGet(uriBuilder.build());
+            return submitRequest(httpGet, httpClient);
+        } catch (final URISyntaxException uriSyntaxException) {
+            throw new HttpRequestException(uriSyntaxException.getMessage(), uriSyntaxException);
+        } catch (final Exception exception) {
+            throw new HttpRequestException(exception.getMessage(), exception);
+        }
     }
 
     private HttpResult executeDeleteRequest(final Request request, final CloseableHttpClient httpClient) {
@@ -115,7 +139,20 @@ public class HttpComponentsClient implements Client {
                 responseStr = "";
             }
 
-            final HttpResult result = new HttpResult(response.getCode(), responseStr);
+            // Collect response headers.
+            final List<HttpHeader> allHeaders = new ArrayList<>();
+            for (final Header header : response.getHeaders()) {
+                allHeaders.add(new HttpHeader(header.getName(), header.getValue()));
+            }
+
+            // Build final abstracted result
+            final HttpResult result = new HttpResult(
+                    response.getCode(),
+                    responseStr,
+                    new HttpHeaders(allHeaders)
+            );
+
+            // and return it.
             return result;
         } catch (final IOException | ParseException e) {
             throw new HttpRequestException(e.getMessage(), e);

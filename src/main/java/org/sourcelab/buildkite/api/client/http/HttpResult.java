@@ -17,12 +17,39 @@
 
 package org.sourcelab.buildkite.api.client.http;
 
+import java.util.Collections;
+
 /**
  * Represents the Response from a Http Request.
  */
 public class HttpResult {
+
+    /**
+     * Http Status Code.
+     */
     final int status;
+
+    /**
+     * Response Body, in String form.
+     */
     final String content;
+
+    /**
+     * Http Response Headers.
+     */
+    final HttpHeaders httpHeaders;
+
+    /**
+     * Constructor.
+     * @param status Status code.
+     * @param content String representation of the response.
+     * @param httpHeaders Http response headers.
+     */
+    public HttpResult(final int status, final String content, final HttpHeaders httpHeaders) {
+        this.status = status;
+        this.content = content;
+        this.httpHeaders = httpHeaders;
+    }
 
     /**
      * Constructor.
@@ -30,8 +57,7 @@ public class HttpResult {
      * @param content String representation of the response.
      */
     public HttpResult(final int status, final String content) {
-        this.status = status;
-        this.content = content;
+        this(status, content, new HttpHeaders(Collections.emptyList()));
     }
 
     public int getStatus() {
@@ -42,11 +68,16 @@ public class HttpResult {
         return content;
     }
 
+    public HttpHeaders getHttpHeaders() {
+        return httpHeaders;
+    }
+
     @Override
     public String toString() {
         return "HttpResult{"
-                + "status=" + status
-                + ", content='" + content + '\''
-                + '}';
+            + "status=" + status
+            + ", content='" + content + '\''
+            + ", httpHeaders=" + httpHeaders
+            + '}';
     }
 }

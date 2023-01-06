@@ -22,6 +22,8 @@ import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Defines an API request.
@@ -39,6 +41,14 @@ public interface Request<T> {
      * @return REST Endpoint Path to request.  Example "/v2/access-token"
      */
     String getPath();
+
+    /**
+     * KeyValue pairs of Request Parameters.
+     * @return RequestParameters associated with request.
+     */
+    default RequestParameters getRequestParameters() {
+        return new RequestParameters(Collections.emptyList());
+    }
 
     /**
      * Defines how to parse the APIs response into a concrete object.
