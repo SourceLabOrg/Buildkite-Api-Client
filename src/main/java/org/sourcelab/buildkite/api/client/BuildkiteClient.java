@@ -34,6 +34,7 @@ import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.ErrorResponse;
+import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 import org.sourcelab.buildkite.api.client.response.parser.ErrorResponseParser;
 
@@ -100,15 +101,15 @@ public class BuildkiteClient {
         return executeRequest(new GetUserRequest());
     }
 
-    public String listBuilds() {
+    public ListBuildsResponse listBuilds() {
         return listBuilds(BuildFilters.newBuilder().build());
     }
 
-    public String listBuilds(final BuildFiltersBuilder filtersBuilder) {
+    public ListBuildsResponse listBuilds(final BuildFiltersBuilder filtersBuilder) {
         return listBuilds(filtersBuilder.build());
     }
 
-    public String listBuilds(final BuildFilters filters) {
+    public ListBuildsResponse listBuilds(final BuildFilters filters) {
         return executeRequest(new ListBuildsRequest(filters));
     }
 

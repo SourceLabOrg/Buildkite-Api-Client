@@ -23,8 +23,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sourcelab.buildkite.api.client.request.BuildFilters;
+import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
+import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -111,11 +114,11 @@ class BuildkiteClientIntegrationTest {
     }
 
     /**
-     * Sanity test the 'getUser' request.
+     * Sanity test the 'listBuilds' request.
      */
     @Test
     void listBuilds() {
-        final String result = client.listBuilds();
+        final ListBuildsResponse result = client.listBuilds(BuildFilters.newBuilder().withPageOptions(1, 2));
         logger.info("Result: {}", result);
 
         assertNotNull(result);

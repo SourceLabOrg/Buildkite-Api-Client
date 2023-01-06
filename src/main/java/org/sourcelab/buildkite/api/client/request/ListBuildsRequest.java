@@ -17,6 +17,8 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
+import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.parser.ListBuildsResponseParser;
 import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 import org.sourcelab.buildkite.api.client.response.parser.StringResponseParser;
 
@@ -24,7 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 
-public class ListBuildsRequest extends GetRequest<String> {
+public class ListBuildsRequest extends GetRequest<ListBuildsResponse> {
     private final BuildFilters filters;
 
     public ListBuildsRequest(final BuildFilters filters) {
@@ -91,7 +93,7 @@ public class ListBuildsRequest extends GetRequest<String> {
     }
 
     @Override
-    public ResponseParser<String> getResponseParser() {
-        return new StringResponseParser();
+    public ResponseParser<ListBuildsResponse> getResponseParser() {
+        return new ListBuildsResponseParser();
     }
 }
