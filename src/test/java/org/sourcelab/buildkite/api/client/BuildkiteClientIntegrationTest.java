@@ -24,11 +24,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
-import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.MetaResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 
 import java.util.List;
@@ -126,6 +126,19 @@ class BuildkiteClientIntegrationTest {
         logger.info("Result: {}", result);
 
         assertNotNull(result);
+    }
+
+    /**
+     * Sanity test the 'getMeta' request.
+     */
+    @Test
+    void getMeta() {
+        final MetaResponse result = client.getMeta();
+        logger.info("Result: {}", result);
+
+        assertNotNull(result);
+        assertNotNull(result.getWebhookIps());
+        assertFalse(result.getWebhookIps().isEmpty());
     }
 
     /**

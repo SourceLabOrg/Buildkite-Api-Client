@@ -37,7 +37,7 @@ public class ListEmojisRequest extends GetRequest<List<Emoji>> {
     }
 
     @Override
-    public ResponseParser getResponseParser() {
+    public ResponseParser<List<Emoji>> getResponseParser() {
         return new ListEmojisResponseParser();
     }
 }

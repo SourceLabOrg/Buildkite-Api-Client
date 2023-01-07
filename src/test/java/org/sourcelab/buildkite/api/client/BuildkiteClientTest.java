@@ -31,11 +31,14 @@ import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.request.HttpMethod;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
+import org.sourcelab.buildkite.api.client.response.Emoji;
+import org.sourcelab.buildkite.api.client.response.MetaResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -220,6 +223,64 @@ public class BuildkiteClientTest {
         assertEquals("https://www.gravatar.com/avatar/ABC", response.getAvatarUrl());
         assertEquals("abc==", response.getGraphqlId());
         assertEquals("2023-01-03T06:06:42.765Z[UTC]", response.getCreatedAt().toString());
+    }
+
+    /**
+     * Verifies the list emojis request and response parsing.
+     */
+    @Test
+    void listEmojis() {
+        final String orgSlugId = "mytestorg";
+
+        // Setup mock expectations.
+        setupMockResponse(
+                "/v2/organizations/" + orgSlugId + "/emojis",
+                HttpMethod.GET,
+                200,
+                "emoji.json"
+        );
+
+        // Call method under test.
+        final List<Emoji> response = client.listEmojis(orgSlugId);
+
+        // Verify response.
+        assertNotNull(response);
+        assertEquals(4159, response.size());
+
+        // Spot check
+        assertEquals("changesets", response.get(10).getName());
+        assertEquals("https://buildkiteassets.com/emojis/img-buildkite-64/changesets.png", response.get(10).getUrl());
+
+        assertEquals("home-assistant", response.get(100).getName());
+        assertEquals("https://buildkiteassets.com/emojis/img-buildkite-64/home-assistant.png", response.get(100).getUrl());
+
+        assertEquals("movie_camera", response.get(1000).getName());
+        assertEquals("https://buildkiteassets.com/emojis/img-apple-64/1f3a5.png", response.get(1000).getUrl());
+    }
+
+    /**
+     * Verifies the {@link BuildkiteClient::getMeta()} request and response parsing.
+     */
+    @Test
+    void getMeta() {
+        // Setup mock expectations.
+        setupMockResponse(
+            "/v2/meta",
+            HttpMethod.GET,
+            200,
+            "meta.json"
+        );
+
+        // Call method under test.
+        final MetaResponse response = client.getMeta();
+
+        // Verify response.
+        assertNotNull(response);
+        assertEquals(3, response.getWebhookIps().size());
+
+        assertEquals("100.24.182.113", response.getWebhookIps().get(0));
+        assertEquals("35.172.45.249", response.getWebhookIps().get(1));
+        assertEquals("54.85.125.32", response.getWebhookIps().get(2));
     }
 
     /**

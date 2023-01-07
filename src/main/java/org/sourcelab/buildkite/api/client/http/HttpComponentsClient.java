@@ -17,7 +17,6 @@
 
 package org.sourcelab.buildkite.api.client.http;
 
-import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -35,9 +34,7 @@ import org.sourcelab.buildkite.api.client.exception.HttpRequestException;
 import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.request.RequestParameter;
 
-import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -50,7 +47,7 @@ public class HttpComponentsClient implements Client {
     /**
      * User supplied API Client configuration.
      */
-    private Configuration configuration;
+    private final Configuration configuration;
 
     /**
      * Constructor.
@@ -85,7 +82,6 @@ public class HttpComponentsClient implements Client {
     @Override
     public HttpResult executeRequest(final Request request) {
         try (final CloseableHttpClient httpClient = getClient()) {
-            final HttpResult result;
             switch (request.getMethod()) {
                 case GET:
                     return executeGetRequest(request, httpClient);

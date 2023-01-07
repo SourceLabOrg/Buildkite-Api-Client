@@ -15,23 +15,39 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.response.parser;
+package org.sourcelab.buildkite.api.client.response;
 
-import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.response.Emoji;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * Parses responses from the "Hello World" Api end point.
- */
-public class ListEmojisResponseParser implements ResponseParser<List<Emoji>> {
+public class MetaResponse {
+    private final List<String> webhookIps;
+
+    /**
+     * Constructor.
+     */
+    @JsonCreator
+    public MetaResponse(@JsonProperty("webhook_ips") final Collection<String> webhookIps) {
+        final List<String> ips = new ArrayList<>();
+        if (webhookIps != null) {
+            ips.addAll(webhookIps);
+        }
+        this.webhookIps = Collections.unmodifiableList(ips);
+    }
+
+    public List<String> getWebhookIps() {
+        return webhookIps;
+    }
+
     @Override
-    public List<Emoji> parseResponse(final HttpResult result) throws IOException {
-        final Emoji[] emojis = JacksonFactory.newInstance().readValue(result.getContent(), Emoji[].class);
-        return Arrays.stream(emojis).collect(Collectors.toList());
+    public String toString() {
+        return "MetaResponse{"
+            + "webhookIps=" + webhookIps
+            + '}';
     }
 }

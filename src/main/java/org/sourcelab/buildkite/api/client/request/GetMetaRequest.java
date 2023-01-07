@@ -15,23 +15,19 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.response.parser;
+package org.sourcelab.buildkite.api.client.request;
 
-import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.response.Emoji;
+import org.sourcelab.buildkite.api.client.response.MetaResponse;
+import org.sourcelab.buildkite.api.client.response.parser.GetMetaResponseParser;
+import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+public class GetMetaRequest extends GetRequest<MetaResponse> {
+    public String getPath() {
+        return "/v2/meta";
+    }
 
-/**
- * Parses responses from the "Hello World" Api end point.
- */
-public class ListEmojisResponseParser implements ResponseParser<List<Emoji>> {
     @Override
-    public List<Emoji> parseResponse(final HttpResult result) throws IOException {
-        final Emoji[] emojis = JacksonFactory.newInstance().readValue(result.getContent(), Emoji[].class);
-        return Arrays.stream(emojis).collect(Collectors.toList());
+    public ResponseParser<MetaResponse> getResponseParser() {
+        return new GetMetaResponseParser();
     }
 }

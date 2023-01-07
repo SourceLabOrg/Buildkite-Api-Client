@@ -18,20 +18,16 @@
 package org.sourcelab.buildkite.api.client.response.parser;
 
 import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.response.Emoji;
+import org.sourcelab.buildkite.api.client.response.MetaResponse;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Parses responses from the "Hello World" Api end point.
+ * Parses responses from the Get Metadata Api end point.
  */
-public class ListEmojisResponseParser implements ResponseParser<List<Emoji>> {
+public class GetMetaResponseParser implements ResponseParser<MetaResponse> {
     @Override
-    public List<Emoji> parseResponse(final HttpResult result) throws IOException {
-        final Emoji[] emojis = JacksonFactory.newInstance().readValue(result.getContent(), Emoji[].class);
-        return Arrays.stream(emojis).collect(Collectors.toList());
+    public MetaResponse parseResponse(final HttpResult result) throws IOException {
+        return JacksonFactory.newInstance().readValue(result.getContent(), MetaResponse.class);
     }
 }

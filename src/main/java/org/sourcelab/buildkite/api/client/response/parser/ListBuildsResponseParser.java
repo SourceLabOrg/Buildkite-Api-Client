@@ -22,12 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.response.Build;
-import org.sourcelab.buildkite.api.client.response.PagingLinks;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.PagingLinks;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class ListBuildsResponseParser implements ResponseParser<ListBuildsResponse> {
     private static final Logger logger = LoggerFactory.getLogger(ListBuildsResponseParser.class);

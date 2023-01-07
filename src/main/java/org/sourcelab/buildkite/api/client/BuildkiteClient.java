@@ -27,6 +27,7 @@ import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.DeleteAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetAccessTokenRequest;
+import org.sourcelab.buildkite.api.client.request.GetMetaRequest;
 import org.sourcelab.buildkite.api.client.request.GetUserRequest;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.request.ListEmojisRequest;
@@ -37,6 +38,7 @@ import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.MetaResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 import org.sourcelab.buildkite.api.client.response.parser.ErrorResponseParser;
 
@@ -102,6 +104,17 @@ public class BuildkiteClient {
      */
     public CurrentUserResponse getUser() throws BuildkiteException {
         return executeRequest(new GetUserRequest());
+    }
+
+    /**
+     * Retrieves metadata endpoint.
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/meta#get-meta-information">https://buildkite.com/docs/apis/rest-api/meta#get-meta-information</a>
+     *
+     * @return Details about the current User.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public MetaResponse getMeta() throws BuildkiteException {
+        return executeRequest(new GetMetaRequest());
     }
 
     /**
