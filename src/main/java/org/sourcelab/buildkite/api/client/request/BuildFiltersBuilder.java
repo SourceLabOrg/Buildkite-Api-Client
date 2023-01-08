@@ -39,7 +39,20 @@ public final class BuildFiltersBuilder {
     private Boolean includeRetriedJobs = null;
     private Map<String, String> metaData = new HashMap<>();
     private Set<String> states = new HashSet<>();
+
     private PageOptions pageOptions = null;
+
+    private String orgIdSlug = null;
+
+    /**
+     * If pipelineSlugId is provided, then orgIdSlug MUST be provided.
+     */
+    private String pipelineIdSlug = null;
+
+    /**
+     * If buildNumber is provided, then pipelineIdSlug (and thus orgIdSlug) MUST be provided.
+     */
+    private Long buildNumber = null;
 
     /**
      * Constructor.
@@ -276,11 +289,38 @@ public final class BuildFiltersBuilder {
         return this;
     }
 
+    public BuildFiltersBuilder withOrganization(final String orgIdSlug) {
+        this.orgIdSlug = orgIdSlug;
+        return this;
+    }
+
+    public BuildFiltersBuilder withPipeline(final String orgIdSlug, final String pipelineIdSlug) {
+        this.pipelineIdSlug = pipelineIdSlug;
+        return withOrganization(orgIdSlug);
+    }
+
+    public BuildFiltersBuilder withBuildNumber(final String orgIdSlug, final String pipelineIdSlug, final Long buildNumber) {
+        this.buildNumber = buildNumber;
+        return withPipeline(orgIdSlug, pipelineIdSlug);
+    }
+
     /**
      * New BuildFilters instance using configured properties.
      * @return New BuildFilters instance using configured properties.
      */
     public BuildFilters build() {
+        // Validation
+        if (buildNumber != null) {
+            if (pipelineIdSlug == null) {
+                throw new IllegalStateException("If BuildNumber is provided, then Pipeline must be provided.");
+            }
+        }
+        if (pipelineIdSlug != null) {
+            if (orgIdSlug == null) {
+                throw new IllegalStateException("If Pipeline is provided, then Organization must be provided.");
+            }
+        }
+
         return new BuildFilters(
             branches,
             commits,
@@ -291,7 +331,10 @@ public final class BuildFiltersBuilder {
             includeRetriedJobs,
             metaData,
             states,
-            pageOptions
+            pageOptions,
+            orgIdSlug,
+            pipelineIdSlug,
+            buildNumber
         );
     }
 }

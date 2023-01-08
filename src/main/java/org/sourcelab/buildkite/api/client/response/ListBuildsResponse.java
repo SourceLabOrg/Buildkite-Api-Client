@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ListBuildsResponse {
     private final PagingLinks pagingLinks;
@@ -29,6 +31,36 @@ public class ListBuildsResponse {
     public ListBuildsResponse(final PagingLinks pagingLinks, final List<Build> builds) {
         this.pagingLinks = Objects.requireNonNull(pagingLinks);
         this.builds = Collections.unmodifiableList(new ArrayList<>(builds));
+    }
+
+    public PagingLinks getPagingLinks() {
+        return pagingLinks;
+    }
+
+    public List<Build> getBuilds() {
+        return builds;
+    }
+
+    /**
+     * Get all build Ids.
+     * @return All build ids.
+     */
+    public List<String> getBuildIds() {
+        return getBuilds().stream()
+            .map(Build::getId)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Given a build Id, return the build associated with the Id.
+     * @param buildId Id of the build to retrieve.
+     * @return Build by buildId.
+     */
+    public Optional<Build> getBuildById(final String buildId) {
+        Objects.requireNonNull(buildId);
+        return getBuilds().stream()
+            .filter((build) -> build.getId().equals(buildId))
+            .findFirst();
     }
 
     @Override

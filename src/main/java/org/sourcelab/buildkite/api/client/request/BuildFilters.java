@@ -40,6 +40,11 @@ public class BuildFilters {
 
     private final PageOptions pageOptions;
 
+    private final String orgIdSlug;
+    private final String pipelineIdSlug;
+    private final Long buildNumber;
+
+
     /**
      * Builder for {@link BuildFilters}.
      * @return Builder for {@link BuildFilters}.
@@ -62,7 +67,10 @@ public class BuildFilters {
         final Boolean includeRetriedJobs,
         final Map<String, String> metaData,
         final Set<String> states,
-        final PageOptions pageOptions
+        final PageOptions pageOptions,
+        final String orgIdSlug,
+        final String pipelineSlugId,
+        final Long buildNumber
     ) {
         this.branches = Collections.unmodifiableSet(new HashSet<>(branches));
         this.commits = Collections.unmodifiableSet(new HashSet<>(commits));
@@ -74,6 +82,9 @@ public class BuildFilters {
         this.metaData = Collections.unmodifiableMap(new HashMap<>(metaData));
         this.states = Collections.unmodifiableSet(new HashSet<>(states));
         this.pageOptions = pageOptions;
+        this.orgIdSlug = orgIdSlug;
+        this.pipelineIdSlug = pipelineSlugId;
+        this.buildNumber = buildNumber;
     }
 
     public Set<String> getBranches() {

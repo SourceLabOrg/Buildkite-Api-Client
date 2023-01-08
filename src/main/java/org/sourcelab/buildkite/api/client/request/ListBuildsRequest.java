@@ -17,6 +17,7 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
+import org.sourcelab.buildkite.api.client.BuildkiteClient;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.parser.ListBuildsResponseParser;
 import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;

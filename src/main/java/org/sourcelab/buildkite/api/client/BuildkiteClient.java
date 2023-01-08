@@ -142,12 +142,15 @@ public class BuildkiteClient {
      * Execute the given request, returning the parsed response, or throwing the appropriate
      * exception if an error was returned from the API.
      *
+     * This method scoped public to allow for user defined requests to be executed by the library
+     * as an extension point.
+     *
      * @param <T> The parsed response object.
      * @param request The request to execute.
      * @return The parsed response object.
      * @throws BuildkiteException if API returns an error response.
      */
-    private <T> T executeRequest(final Request<T> request) throws BuildkiteException {
+    public <T> T executeRequest(final Request<T> request) throws BuildkiteException {
         final HttpResult result = httpClient.executeRequest(request);
 
         // Handle Errors based on HttpCode.
@@ -155,7 +158,7 @@ public class BuildkiteClient {
             handleError(result);
         }
 
-        // Normal
+        // Success response code, parse response into object and return.
         return request.parseResponse(result);
     }
 
