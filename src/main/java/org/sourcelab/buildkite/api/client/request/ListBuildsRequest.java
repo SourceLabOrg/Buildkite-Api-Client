@@ -41,6 +41,14 @@ public class ListBuildsRequest extends GetRequest<ListBuildsResponse> implements
 
     @Override
     public String getPath() {
+        // TODO need to urlencode these?
+        if (filters.hasBuildNumber()) {
+            return "/v2/organizations/" + filters.getOrgIdSlug() + "/pipelines/" + filters.getPipelineIdSlug() + "/builds/" + filters.getBuildNumber();
+        } else if (filters.hasPipelineIdSlug()) {
+            return "/v2/organizations/" + filters.getOrgIdSlug() + "/pipelines/" + filters.getPipelineIdSlug() + "/builds";
+        } else if (filters.hasOrgIdSlug()) {
+            return "/v2/organizations/" + filters.getOrgIdSlug() + "/builds";
+        }
         return "/v2/builds";
     }
 

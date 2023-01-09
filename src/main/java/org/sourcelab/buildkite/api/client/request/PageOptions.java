@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * Paging options.
  */
 public class PageOptions {
-    private final int page;
+    private final long page;
     private final int perPage;
 
     private static final PageOptions DEFAULT = new PageOptions(1, 30);
@@ -43,7 +43,7 @@ public class PageOptions {
      * @param page Which page to request.
      * @param perPage How many entries per page.
      */
-    public PageOptions(int page, int perPage) {
+    public PageOptions(long page, int perPage) {
         if (page < 0) {
             page = 1;
         }
@@ -90,7 +90,7 @@ public class PageOptions {
         return new PageOptions(page, perPage);
     }
 
-    public int getPage() {
+    public long getPage() {
         return page;
     }
 

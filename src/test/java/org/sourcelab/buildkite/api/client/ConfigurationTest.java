@@ -17,6 +17,7 @@
 
 package org.sourcelab.buildkite.api.client;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +43,11 @@ class ConfigurationTest {
         assertEquals("MyFakeToken", configuration.getApiToken());
     }
 
+    /**
+     * Temp Testing CI/CD.
+     */
     @Test
+    @Disabled
     void failTest()
     {
         assertTrue(false);

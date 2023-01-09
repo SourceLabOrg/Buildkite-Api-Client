@@ -23,7 +23,6 @@ import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Defines an API request.

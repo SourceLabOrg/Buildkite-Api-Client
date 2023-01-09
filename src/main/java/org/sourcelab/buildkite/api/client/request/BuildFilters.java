@@ -127,6 +127,30 @@ public class BuildFilters {
         return pageOptions;
     }
 
+    public String getOrgIdSlug() {
+        return orgIdSlug;
+    }
+
+    public boolean hasOrgIdSlug() {
+        return orgIdSlug != null;
+    }
+
+    public String getPipelineIdSlug() {
+        return pipelineIdSlug;
+    }
+
+    public boolean hasPipelineIdSlug() {
+        return hasOrgIdSlug() && pipelineIdSlug != null;
+    }
+
+    public Long getBuildNumber() {
+        return buildNumber;
+    }
+
+    public boolean hasBuildNumber() {
+        return hasPipelineIdSlug() && buildNumber != null;
+    }
+
     @Override
     public String toString() {
         return "BuildRequestOptions{"

@@ -24,13 +24,14 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
-import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.MetaResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
+import org.sourcelab.buildkite.api.client.util.BuildkiteClientUtils;
 
 import java.util.List;
 
@@ -55,6 +56,10 @@ class BuildkiteClientIntegrationTest {
 
     private Configuration configuration;
     private BuildkiteClient client;
+
+    private final String orgIdSlug = "sourcelaborg";
+    private final String userId = "0185763d-3c4e-4489-9ac5-0634fc300173";
+    private final String pipelineIdSlug = "run-tests";
 
     @BeforeEach
     void setUp() {
@@ -164,5 +169,22 @@ class BuildkiteClientIntegrationTest {
         logger.info("Result: {}", result);
 
         assertNotNull(resultPage2, "Page 2 result should be not null.");
+    }
+
+    /**
+     * Sanity test BuildkiteClientUtils.retrieveNewestBuilds().
+     */
+    @Test
+    void retrieveNewestBuilds() {
+        final BuildFilters filters = BuildFilters.newBuilder()
+                .withPageOptions(1, 1)
+                //.withStateChooser().passed()
+                .withCreator(userId)
+                .withPipeline(orgIdSlug, pipelineIdSlug)
+                .build();
+
+        // Get the latest 10 results.
+        final List<Build> builds = BuildkiteClientUtils.retrieveNewestBuilds(10, filters, client);
+        logger.info("Found: {}", builds);
     }
 }

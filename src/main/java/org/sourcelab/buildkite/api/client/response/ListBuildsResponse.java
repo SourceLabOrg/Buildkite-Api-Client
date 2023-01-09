@@ -69,6 +69,14 @@ public class ListBuildsResponse implements PageableResponse<ListBuildsResponse> 
     }
 
     /**
+     * The total number of builds found.
+     * @return The total number of builds found.
+     */
+    public int countBuilds() {
+        return getBuilds().size();
+    }
+
+    /**
      * Get all build Ids.
      * @return All build ids.
      */

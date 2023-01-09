@@ -18,15 +18,18 @@
 package org.sourcelab.buildkite.api.client.response.parser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.response.Build;
-import org.sourcelab.buildkite.api.client.response.PagingLinks;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.PagingLinks;
 
 import java.util.Arrays;
 
 public class ListBuildsResponseParser implements ResponseParser<ListBuildsResponse> {
+    private static final Logger logger = LoggerFactory.getLogger(ListBuildsResponseParser.class);
     private final ListBuildsRequest originalRequest;
 
     public ListBuildsResponseParser(final ListBuildsRequest originalRequest) {
@@ -35,7 +38,7 @@ public class ListBuildsResponseParser implements ResponseParser<ListBuildsRespon
 
     @Override
     public ListBuildsResponse parseResponse(final HttpResult result) throws JsonProcessingException {
-
+        logger.info(result.getContent());
         final PagingLinks pagingLinks;
         if (result.getHttpHeaders().hasHeader("Link")) {
             // Parse out the link header.

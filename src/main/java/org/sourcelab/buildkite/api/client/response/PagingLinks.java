@@ -17,6 +17,8 @@
 
 package org.sourcelab.buildkite.api.client.response;
 
+import org.sourcelab.buildkite.api.client.request.PageOptions;
+
 /**
  * Represents the 'Link' header for paging results.
  */
@@ -106,6 +108,19 @@ public class PagingLinks {
             throw new IllegalStateException("Last Url is not defined.");
         }
         return lastUrl;
+    }
+
+    /**
+     * If the Last Page URL is populated, calculate the total number of entries.
+     * @return If the Last Page URL is populated, calculate the total number of entries.
+     * @throws IllegalStateException If the Last Url is not defined.
+     */
+    public long getTotalNumberOfEntries() {
+        if (!hasLastUrl()) {
+            throw new IllegalStateException("Last Url is not defined, cannot determine total number of entries.");
+        }
+        final PageOptions pageOptions = PageOptions.fromUrl(getLastUrl());
+        return ((long) pageOptions.getPage()) * ((long) pageOptions.getPerPage());
     }
 
     @Override
