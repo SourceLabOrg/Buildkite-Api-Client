@@ -40,4 +40,10 @@ class ConfigurationTest {
         assertNotNull(configuration);
         assertEquals("MyFakeToken", configuration.getApiToken());
     }
+
+    @Test
+    void failTest()
+    {
+        assertTrue(false, "failed test");
+    }
 }
