@@ -149,6 +149,7 @@ class BuildkiteClientIntegrationTest {
     void listBuilds() {
         final BuildFilters filters = BuildFilters.newBuilder()
                 .withPageOptions(1, 2)
+                .withStateChooser().failed()
                 .build();
         final ListBuildsResponse result = client.listBuilds(filters);
         logger.info("Result: {}", result);
