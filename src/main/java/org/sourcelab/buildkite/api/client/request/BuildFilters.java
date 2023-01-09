@@ -81,7 +81,7 @@ public class BuildFilters {
         this.includeRetriedJobs = includeRetriedJobs;
         this.metaData = Collections.unmodifiableMap(new HashMap<>(metaData));
         this.states = Collections.unmodifiableSet(new HashSet<>(states));
-        this.pageOptions = pageOptions;
+        this.pageOptions = pageOptions == null ? PageOptions.getDefault() : pageOptions;
         this.orgIdSlug = orgIdSlug;
         this.pipelineIdSlug = pipelineSlugId;
         this.buildNumber = buildNumber;

@@ -17,7 +17,6 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
-import org.sourcelab.buildkite.api.client.BuildkiteClient;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.parser.ListBuildsResponseParser;
 import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
@@ -26,14 +25,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 
-public class ListBuildsRequest extends GetRequest<ListBuildsResponse> {
+public class ListBuildsRequest extends GetRequest<ListBuildsResponse> implements PageableRequest<ListBuildsResponse> {
     private final BuildFilters filters;
+    private PageOptions pageOptions;
 
+    /**
+     * Constructor.
+     * @param filters Search Criteria.
+     */
     public ListBuildsRequest(final BuildFilters filters) {
         Objects.requireNonNull(filters);
         this.filters = filters;
+        this.pageOptions = filters.getPageOptions() == null ? PageOptions.getDefault() : filters.getPageOptions();
     }
 
+    @Override
     public String getPath() {
         return "/v2/builds";
     }
@@ -43,10 +49,8 @@ public class ListBuildsRequest extends GetRequest<ListBuildsResponse> {
         final RequestParametersBuilder builder = RequestParameters.newBuilder();
 
         // Paging options
-        if (filters.getPageOptions() != null) {
-            builder.withParameter("per_page", filters.getPageOptions().getPerPage());
-            builder.withParameter("page", filters.getPageOptions().getPage());
-        }
+        builder.withParameter("per_page", pageOptions.getPerPage());
+        builder.withParameter("page", pageOptions.getPage());
 
         // If we have branches
         if (!filters.getBranches().isEmpty()) {
@@ -94,6 +98,11 @@ public class ListBuildsRequest extends GetRequest<ListBuildsResponse> {
 
     @Override
     public ResponseParser<ListBuildsResponse> getResponseParser() {
-        return new ListBuildsResponseParser();
+        return new ListBuildsResponseParser(this);
+    }
+
+    @Override
+    public void updatePageOptions(final PageOptions pageOptions) {
+        this.pageOptions = Objects.requireNonNull(pageOptions);
     }
 }

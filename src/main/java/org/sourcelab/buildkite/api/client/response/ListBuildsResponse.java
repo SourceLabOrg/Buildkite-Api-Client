@@ -17,6 +17,9 @@
 
 package org.sourcelab.buildkite.api.client.response;
 
+import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
+import org.sourcelab.buildkite.api.client.request.PageableRequest;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,19 +27,43 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ListBuildsResponse {
+/**
+ * Represents the results from the /v2/build API end point.
+ */
+public class ListBuildsResponse implements PageableResponse<ListBuildsResponse> {
     private final PagingLinks pagingLinks;
     private final List<Build> builds;
+    private final ListBuildsRequest originalRequest;
 
-    public ListBuildsResponse(final PagingLinks pagingLinks, final List<Build> builds) {
+    /**
+     * Constructor.
+     * @param pagingLinks Paging links for results.
+     * @param builds All builds returned in the response.
+     * @param originalRequest The original request used to retrieve these results.
+     */
+    public ListBuildsResponse(final PagingLinks pagingLinks, final List<Build> builds, final ListBuildsRequest originalRequest) {
         this.pagingLinks = Objects.requireNonNull(pagingLinks);
         this.builds = Collections.unmodifiableList(new ArrayList<>(builds));
+        this.originalRequest = originalRequest;
     }
 
+    /**
+     * Paging Link references for the results.
+     * @return Paging Link references for the results.
+     */
     public PagingLinks getPagingLinks() {
         return pagingLinks;
     }
 
+    @Override
+    public PageableRequest<ListBuildsResponse> getOriginalRequest() {
+        return originalRequest;
+    }
+
+    /**
+     * All of the Builds returned from the API response.
+     * @return All of the Builds returned from the API response.
+     */
     public List<Build> getBuilds() {
         return builds;
     }
@@ -66,8 +93,9 @@ public class ListBuildsResponse {
     @Override
     public String toString() {
         return "ListBuildsResponse{"
-                + "pagingLinks=" + pagingLinks
-                + ", builds=" + builds
-                + '}';
+            + "pagingLinks=" + pagingLinks
+            + ", builds=" + builds
+            + ", originalRequest=" + originalRequest
+            + '}';
     }
 }

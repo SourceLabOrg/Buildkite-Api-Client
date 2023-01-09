@@ -147,9 +147,21 @@ class BuildkiteClientIntegrationTest {
      */
     @Test
     void listBuilds() {
-        final ListBuildsResponse result = client.listBuilds(BuildFilters.newBuilder().withPageOptions(1, 2));
+        final BuildFilters filters = BuildFilters.newBuilder()
+                .withPageOptions(1, 2)
+                .build();
+        final ListBuildsResponse result = client.listBuilds(filters);
         logger.info("Result: {}", result);
 
-        assertNotNull(result);
+        assertNotNull(result, "Result should not be null.");
+        assertNotNull(result.getPagingLinks(), "Paging Links should not be null.");
+        assertTrue(result.getPagingLinks().hasNextUrl(), "Should have next page.");
+        assertNotNull(result.getPagingLinks().getNextUrl());
+
+        // Attempt to get next page.
+        final ListBuildsResponse resultPage2 = client.nextPage(result);
+        logger.info("Result: {}", result);
+
+        assertNotNull(resultPage2, "Page 2 result should be not null.");
     }
 }

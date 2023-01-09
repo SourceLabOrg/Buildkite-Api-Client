@@ -17,6 +17,10 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Paging options.
  */
@@ -53,6 +57,39 @@ public class PageOptions {
         this.perPage = perPage;
     }
 
+    /**
+     * Parses the given url and creates a PageOptions instance from the parameters.
+     *
+     * @param url The url to parse for per_page and page parameters.
+     * @return PageOptions instance populated from the supplied url.
+     * @throws IllegalArgumentException if passed an invalid url.
+     */
+    public static PageOptions fromUrl(final String url) {
+        Objects.requireNonNull(url);
+
+        final Pattern perPagePattern = Pattern.compile(".*[?&]per_page=([0-9]+).*");
+        final Pattern pagePattern = Pattern.compile(".*[?&]page=([0-9]+).*");
+
+        Integer perPage = null;
+        Integer page = null;
+
+        final Matcher perPageMatcher = perPagePattern.matcher(url);
+        if (perPageMatcher.matches() && perPageMatcher.groupCount() == 1) {
+            perPage = Integer.parseInt(perPageMatcher.group(1));
+        }
+
+        final Matcher pageMatcher = pagePattern.matcher(url);
+        if (pageMatcher.matches() && pageMatcher.groupCount() == 1) {
+            page = Integer.parseInt(pageMatcher.group(1));
+        }
+
+        if (perPage == null || page == null) {
+            throw new IllegalArgumentException("Unable to parse url " + url);
+        }
+
+        return new PageOptions(page, perPage);
+    }
+
     public int getPage() {
         return page;
     }
@@ -64,8 +101,8 @@ public class PageOptions {
     @Override
     public String toString() {
         return "PageOptions{"
-                + "page=" + page
-                + ", perPage=" + perPage
-                + '}';
+            + "page=" + page
+            + ", perPage=" + perPage
+            + '}';
     }
 }
