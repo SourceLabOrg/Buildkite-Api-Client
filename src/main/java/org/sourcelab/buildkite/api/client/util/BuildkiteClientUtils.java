@@ -19,12 +19,20 @@ package org.sourcelab.buildkite.api.client.util;
 
 import org.sourcelab.buildkite.api.client.BuildkiteClient;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
+import org.sourcelab.buildkite.api.client.request.Filters;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
+import org.sourcelab.buildkite.api.client.request.ListOrganizationsRequest;
+import org.sourcelab.buildkite.api.client.request.OrganizationFilters;
 import org.sourcelab.buildkite.api.client.request.PageOptions;
+import org.sourcelab.buildkite.api.client.request.PageableRequest;
+import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
+import org.sourcelab.buildkite.api.client.response.PageableResponse;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -65,6 +73,62 @@ public class BuildkiteClientUtils {
         // But the results are still sorted in oldest to newest, we want newest to oldest, so reverse the order
         // before returning.
         final List<Build> reversed = new ArrayList<>(response.getBuilds());
+        return reversed;
+    }
+
+    /**
+     * Helper method to retrieve all entries given a filter criteria.
+     * The results will be ordered from NEWEST to OLDEST.
+     *
+     * @param <REQUEST> The request class.
+     * @param <OBJECT> The object within the Response to return.
+     * @param filters Search criteria.
+     * @param requestClass The request class.
+     * @param objectClass The object within the Response to return.
+     * @param client The BuildkiteClient to execute the requests against.
+     * @return List of Builds sorted from NEWEST to OLDEST.
+     */
+    public static <REQUEST, OBJECT> List<OBJECT> retrieveAll(
+            final Filters filters,
+            final Class<REQUEST> requestClass,
+            final Class<OBJECT> objectClass,
+            final BuildkiteClient client
+    ) {
+        final PageableRequest<REQUEST> request;
+        if (filters instanceof BuildFilters) {
+            request = (PageableRequest<REQUEST>) new ListBuildsRequest((BuildFilters) filters);
+        } else if (filters instanceof OrganizationFilters) {
+            request = (PageableRequest<REQUEST>) new ListOrganizationsRequest((OrganizationFilters) filters);
+        } else {
+            throw new RuntimeException("Unknown type.");
+        }
+
+        final List<OBJECT> entries = new ArrayList<>();
+        boolean hasMore = true;
+        int page = 0;
+        while (hasMore) {
+            page++;
+
+            // Create request
+            request.updatePageOptions(new PageOptions(page, 100));
+
+            // Retrieve first entry only, to determine how many total entries there are.
+            final PageableResponse<REQUEST> lookupResponse = client.executeRequest((Request<? extends PageableResponse<REQUEST>>) request);
+
+            if (filters instanceof BuildFilters) {
+                entries.addAll((Collection<? extends OBJECT>) ((ListBuildsResponse) lookupResponse).getBuilds());
+            } else if (filters instanceof OrganizationFilters) {
+                entries.addAll((Collection<? extends OBJECT>) ((ListOrganizationsResponse) lookupResponse).getOrganizations());
+            } else {
+                throw new RuntimeException("Unknown type.");
+            }
+
+            hasMore = lookupResponse.getPagingLinks().hasNextUrl();
+        }
+
+        // But the results are still sorted in oldest to newest, we want newest to oldest, so reverse the order
+        // before returning.
+        final List<OBJECT> reversed = new ArrayList<>(entries);
         return reversed;
     }
 }

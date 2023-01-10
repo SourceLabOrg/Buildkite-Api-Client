@@ -24,11 +24,13 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
+import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
 import org.sourcelab.buildkite.api.client.response.MetaResponse;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 import org.sourcelab.buildkite.api.client.util.BuildkiteClientUtils;
@@ -186,5 +188,29 @@ class BuildkiteClientIntegrationTest {
         // Get the latest 10 results.
         final List<Build> builds = BuildkiteClientUtils.retrieveNewestBuilds(10, filters, client);
         logger.info("Found: {}", builds);
+    }
+
+    /**
+     * Sanity test BuildkiteClientUtils.retrieveNewestBuilds().
+     */
+    @Test
+    void retrieveAll() {
+        final BuildFilters filters = BuildFilters.newBuilder()
+                //.withStateChooser().passed()
+                .withCreator(userId)
+                .build();
+
+        // Get all builds.
+        final List<Build> builds = BuildkiteClientUtils.retrieveAll(filters, ListBuildsRequest.class, Build.class, client);
+        logger.info("Found: {}", builds);
+    }
+
+    /**
+     * Sanity test BuildkiteClientUtils.retrieveNewestBuilds().
+     */
+    @Test
+    void listOrganizations() {
+        final ListOrganizationsResponse organizations = client.listOrganizations();
+        logger.info("Found: {}", organizations);
     }
 }

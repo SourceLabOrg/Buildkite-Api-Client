@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * Optional Properties to filter Builds.
  */
-public class BuildFilters {
+public class BuildFilters implements Filters {
     private final Set<String> branches;
     private final Set<String> commits;
     private final ZonedDateTime createdFrom;

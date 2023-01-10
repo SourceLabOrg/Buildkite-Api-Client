@@ -32,6 +32,9 @@ import org.sourcelab.buildkite.api.client.request.GetMetaRequest;
 import org.sourcelab.buildkite.api.client.request.GetUserRequest;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.request.ListEmojisRequest;
+import org.sourcelab.buildkite.api.client.request.ListOrganizationsRequest;
+import org.sourcelab.buildkite.api.client.request.OrganizationFilters;
+import org.sourcelab.buildkite.api.client.request.OrganizationFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.PageOptions;
 import org.sourcelab.buildkite.api.client.request.PageableRequest;
 import org.sourcelab.buildkite.api.client.request.PingRequest;
@@ -41,15 +44,19 @@ import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
+import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
 import org.sourcelab.buildkite.api.client.response.MetaResponse;
+import org.sourcelab.buildkite.api.client.response.Organization;
 import org.sourcelab.buildkite.api.client.response.PageableResponse;
 import org.sourcelab.buildkite.api.client.response.PagingLinks;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
 import org.sourcelab.buildkite.api.client.response.parser.ErrorResponseParser;
+import org.sourcelab.buildkite.api.client.response.parser.ListOrganizationsResponseParser;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * API Client for Buildkite's REST Api.
@@ -113,6 +120,61 @@ public class BuildkiteClient {
     }
 
     /**
+     * Retrieve all Organizations accessible to the current user/API access token.
+     * Results will be paged.
+     *
+     * @return All Organizations accessible to the current user/API access token. Results
+     *         will be paged if the number of results exceeds 30.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public ListOrganizationsResponse listOrganizations() throws BuildkiteException {
+        return listOrganizations(OrganizationFilters.newBuilder());
+    }
+
+    /**
+     * Retrieve all Organizations accessible to the current user/API access token.
+     * Results will be paged.
+     *
+     * @param filters Filter criteria.
+     * @return All Organizations accessible to the current user/API access token. Results
+     *         will be paged if the number of results exceeds 30.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public ListOrganizationsResponse listOrganizations(final OrganizationFiltersBuilder filters) throws BuildkiteException {
+        Objects.requireNonNull(filters);
+        return listOrganizations(filters.build());
+    }
+
+    /**
+     * Retrieve all Organizations accessible to the current user/API access token.
+     * Results will be paged.
+     *
+     * @param filters Filter criteria.
+     * @return All Organizations accessible to the current user/API access token. Results
+     *         will be paged if the number of results exceeds 30.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public ListOrganizationsResponse listOrganizations(final OrganizationFilters filters) throws BuildkiteException {
+        Objects.requireNonNull(filters);
+        return executeRequest(new ListOrganizationsRequest(filters));
+    }
+
+    /**
+     * Retrieve specific organization via its Organization slug id.
+     *
+     * @param organizationSlugId Slug of the organization to retrieve.
+     * @return Organization matching the slug, if found.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Optional<Organization> getOrganization(final String organizationSlugId) throws BuildkiteException {
+        Objects.requireNonNull(organizationSlugId);
+        final ListOrganizationsResponse response = listOrganizations(OrganizationFilters.newBuilder()
+                .withOrganization(organizationSlugId)
+        );
+        return response.getOrganizationBySlug(organizationSlugId);
+    }
+
+    /**
      * Retrieves metadata endpoint.
      * @see <a href="https://buildkite.com/docs/apis/rest-api/meta#get-meta-information">https://buildkite.com/docs/apis/rest-api/meta#get-meta-information</a>
      *
@@ -148,6 +210,7 @@ public class BuildkiteClient {
     /**
      * Retrieve all builds which match the supplied search criteria.
      *
+     * @param filtersBuilder Filter criteria.
      * @return All builds which match the supplied search criteria. Results will be paged if the number of results
      *         exceeds 30 (or the page limit specified in the search criteria).
      *
@@ -160,6 +223,7 @@ public class BuildkiteClient {
     /**
      * Retrieve all builds which match the supplied search criteria.
      *
+     * @param filters Filter criteria.
      * @return All builds which match the supplied search criteria. Results will be paged if the number of results
      *         exceeds 30 (or the page limit specified in the search criteria).
      *
