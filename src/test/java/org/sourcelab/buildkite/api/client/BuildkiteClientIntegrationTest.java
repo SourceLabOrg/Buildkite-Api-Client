@@ -25,17 +25,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
+import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
+import org.sourcelab.buildkite.api.client.response.ListPipelinesResponse;
 import org.sourcelab.buildkite.api.client.response.MetaResponse;
+import org.sourcelab.buildkite.api.client.response.Organization;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
+import org.sourcelab.buildkite.api.client.response.Pipeline;
 import org.sourcelab.buildkite.api.client.util.BuildkiteClientUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -191,10 +196,10 @@ class BuildkiteClientIntegrationTest {
     }
 
     /**
-     * Sanity test BuildkiteClientUtils.retrieveNewestBuilds().
+     * Sanity test BuildkiteClientUtils.retrieveAll().
      */
     @Test
-    void retrieveAll() {
+    void retrieveAll_builds() {
         final BuildFilters filters = BuildFilters.newBuilder()
                 //.withStateChooser().passed()
                 .withCreator(userId)
@@ -206,11 +211,55 @@ class BuildkiteClientIntegrationTest {
     }
 
     /**
+     * Sanity test BuildkiteClientUtils.retrieveAll().
+     */
+    @Test
+    void retrieveAll_pipelines() {
+        final PipelineFilters filters = PipelineFilters.newBuilder()
+                .withOrganization(orgIdSlug)
+                .build();
+
+        // Get all builds.
+        final List<Pipeline> pipelines = BuildkiteClientUtils.retrieveAll(
+            filters,
+            ListPipelinesResponse.class,
+            Pipeline.class,
+            client
+        );
+        logger.info("Found: {}", pipelines);
+    }
+
+    /**
      * Sanity test BuildkiteClientUtils.retrieveNewestBuilds().
      */
     @Test
     void listOrganizations() {
         final ListOrganizationsResponse organizations = client.listOrganizations();
         logger.info("Found: {}", organizations);
+    }
+
+    /**
+     * Sanity test BuildkiteClientUtils.retrieveNewestBuilds().
+     */
+    @Test
+    void getOrganization() {
+        final Optional<Organization> organization = client.getOrganization(orgIdSlug);
+        logger.info("Found: {}", organization.get());
+    }
+
+    /**
+     * Sanity test the 'listPiplines' request.
+     */
+    @Test
+    void listPipelines() {
+        final PipelineFilters filters = PipelineFilters.newBuilder()
+                .withPageOptions(1, 2)
+                .withOrganization(orgIdSlug)
+                .build();
+        final ListPipelinesResponse result = client.listPipelines(filters);
+        logger.info("Result: {}", result);
+
+        assertNotNull(result, "Result should not be null.");
+        assertNotNull(result.getPagingLinks(), "Paging Links should not be null.");
     }
 }

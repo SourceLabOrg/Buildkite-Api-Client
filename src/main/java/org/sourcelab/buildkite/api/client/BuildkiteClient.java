@@ -29,15 +29,20 @@ import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.DeleteAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetMetaRequest;
+import org.sourcelab.buildkite.api.client.request.GetOrganizationRequest;
+import org.sourcelab.buildkite.api.client.request.GetPipelineRequest;
 import org.sourcelab.buildkite.api.client.request.GetUserRequest;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.request.ListEmojisRequest;
 import org.sourcelab.buildkite.api.client.request.ListOrganizationsRequest;
+import org.sourcelab.buildkite.api.client.request.ListPipelinesRequest;
 import org.sourcelab.buildkite.api.client.request.OrganizationFilters;
 import org.sourcelab.buildkite.api.client.request.OrganizationFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.PageOptions;
 import org.sourcelab.buildkite.api.client.request.PageableRequest;
 import org.sourcelab.buildkite.api.client.request.PingRequest;
+import org.sourcelab.buildkite.api.client.request.PipelineFiltersBuilder;
+import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
@@ -45,13 +50,14 @@ import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
+import org.sourcelab.buildkite.api.client.response.ListPipelinesResponse;
 import org.sourcelab.buildkite.api.client.response.MetaResponse;
 import org.sourcelab.buildkite.api.client.response.Organization;
 import org.sourcelab.buildkite.api.client.response.PageableResponse;
 import org.sourcelab.buildkite.api.client.response.PagingLinks;
 import org.sourcelab.buildkite.api.client.response.PingResponse;
+import org.sourcelab.buildkite.api.client.response.Pipeline;
 import org.sourcelab.buildkite.api.client.response.parser.ErrorResponseParser;
-import org.sourcelab.buildkite.api.client.response.parser.ListOrganizationsResponseParser;
 
 import java.io.IOException;
 import java.util.List;
@@ -168,10 +174,67 @@ public class BuildkiteClient {
      */
     public Optional<Organization> getOrganization(final String organizationSlugId) throws BuildkiteException {
         Objects.requireNonNull(organizationSlugId);
-        final ListOrganizationsResponse response = listOrganizations(OrganizationFilters.newBuilder()
-                .withOrganization(organizationSlugId)
+        final Organization response = executeRequest(new GetOrganizationRequest(organizationSlugId));
+        return Optional.ofNullable(response);
+    }
+
+    /**
+     * Retrieve all Pipeline accessible to the current user/API access token for the given Organization.
+     * Results will be paged.
+     *
+     * @param filters Filter criteria.
+     * @return All Pipelines accessible to the current user/API access token. Results
+     *         will be paged if the number of results exceeds 30.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public ListPipelinesResponse listPipelines(final PipelineFiltersBuilder filters) throws BuildkiteException {
+        Objects.requireNonNull(filters);
+        return listPipelines(filters.build());
+    }
+
+    /**
+     * Retrieve all Pipelines accessible to the current user/API access token for the given Organization.
+     * Results will be paged.
+     *
+     * @param filters Filter criteria.
+     * @return All Pipelines accessible to the current user/API access token. Results
+     *         will be paged if the number of results exceeds 30.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public ListPipelinesResponse listPipelines(final PipelineFilters filters) throws BuildkiteException {
+        Objects.requireNonNull(filters);
+        return executeRequest(new ListPipelinesRequest(filters));
+    }
+
+    /**
+     * Retrieve all Pipelines accessible to the current user/API access token for the given Organization.
+     * Results will be paged.
+     *
+     * @param organizationSlugId Organization Slug Id to retrieve pipelines for.
+     * @return All Pipelines accessible to the current user/API access token for the given Organization. Results
+     *         will be paged if the number of results exceeds 30.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public ListPipelinesResponse listPipelines(final String organizationSlugId) throws BuildkiteException {
+        Objects.requireNonNull(organizationSlugId);
+        return listPipelines(PipelineFilters.newBuilder()
+            .withOrganization(organizationSlugId)
         );
-        return response.getOrganizationBySlug(organizationSlugId);
+    }
+
+    /**
+     * Retrieve specific pipeline via its Organization and Pipeline Slug Ids.
+     *
+     * @param organizationSlugId Slug of the organization to retrieve.
+     * @param pipelineSlugId Slug of the pipeline to retrieve.
+     * @return Pipeline matching the slug, if found.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Optional<Pipeline> getPipeline(final String organizationSlugId, final String pipelineSlugId) throws BuildkiteException {
+        Objects.requireNonNull(organizationSlugId);
+        Objects.requireNonNull(pipelineSlugId);
+        final Pipeline pipeline = executeRequest(new GetPipelineRequest(organizationSlugId, pipelineSlugId));
+        return Optional.ofNullable(pipeline);
     }
 
     /**

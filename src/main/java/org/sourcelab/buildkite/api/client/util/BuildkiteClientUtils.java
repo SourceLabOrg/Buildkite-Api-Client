@@ -22,13 +22,16 @@ import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.Filters;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.request.ListOrganizationsRequest;
+import org.sourcelab.buildkite.api.client.request.ListPipelinesRequest;
 import org.sourcelab.buildkite.api.client.request.OrganizationFilters;
 import org.sourcelab.buildkite.api.client.request.PageOptions;
 import org.sourcelab.buildkite.api.client.request.PageableRequest;
+import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
+import org.sourcelab.buildkite.api.client.response.ListPipelinesResponse;
 import org.sourcelab.buildkite.api.client.response.PageableResponse;
 
 import java.util.ArrayList;
@@ -99,6 +102,8 @@ public class BuildkiteClientUtils {
             request = (PageableRequest<REQUEST>) new ListBuildsRequest((BuildFilters) filters);
         } else if (filters instanceof OrganizationFilters) {
             request = (PageableRequest<REQUEST>) new ListOrganizationsRequest((OrganizationFilters) filters);
+        } else if (filters instanceof PipelineFilters) {
+            request = (PageableRequest<REQUEST>) new ListPipelinesRequest((PipelineFilters) filters);
         } else {
             throw new RuntimeException("Unknown type.");
         }
@@ -119,6 +124,8 @@ public class BuildkiteClientUtils {
                 entries.addAll((Collection<? extends OBJECT>) ((ListBuildsResponse) lookupResponse).getBuilds());
             } else if (filters instanceof OrganizationFilters) {
                 entries.addAll((Collection<? extends OBJECT>) ((ListOrganizationsResponse) lookupResponse).getOrganizations());
+            } else if (filters instanceof PipelineFilters) {
+                entries.addAll((Collection<? extends OBJECT>) ((ListPipelinesResponse) lookupResponse).getPipelines());
             } else {
                 throw new RuntimeException("Unknown type.");
             }
