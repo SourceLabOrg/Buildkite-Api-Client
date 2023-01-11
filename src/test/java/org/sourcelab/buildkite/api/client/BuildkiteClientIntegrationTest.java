@@ -181,24 +181,6 @@ class BuildkiteClientIntegrationTest {
     }
 
     /**
-     * Sanity test BuildkiteClientUtils.retrieveNewestBuilds().
-     */
-    @Test
-    void retrieveNewestBuilds() {
-        final BuildFilters filters = BuildFilters.newBuilder()
-                .withPageOptions(1, 1)
-                //.withStateChooser().passed()
-                .withCreator(userId)
-                .withPipeline(orgIdSlug, pipelineIdSlug)
-                .build();
-
-        // Get the latest 10 results.
-        final List<Build> builds = BuildkiteClientUtils.retrieveNewestBuilds(10, filters, client);
-        logger.info("Found: {}", builds);
-        builds.forEach((build) -> logger.info("Build {} {} ", build.getNumber(), build.getCreatedAt()));
-    }
-
-    /**
      * Sanity test BuildkiteClientUtils.retrieveAll().
      */
     @Test

@@ -45,41 +45,6 @@ import java.util.List;
 public class BuildkiteClientUtils {
 
     /**
-     * Helper method to retrieve the N **newest** builds given the supplied search criteria.
-     * The results will be ordered from NEWEST to OLDEST.
-     *
-     * @param numberOfBuilds How many builds to retrieve, (artificially) limited to max of 100.
-     * @param filters Search criteria.
-     * @param client The BuildkiteClient to execute the requests against.
-     * @return List of Builds sorted from NEWEST to OLDEST.
-     */
-    public static List<Build> retrieveNewestBuilds(final int numberOfBuilds, final BuildFilters filters, final BuildkiteClient client) {
-        // Create request
-        final ListBuildsRequest request = new ListBuildsRequest(filters);
-        request.updatePageOptions(new PageOptions(1, 1));
-
-        // Retrieve first entry only, to determine how many total entries there are.
-        final ListBuildsResponse lookupResponse = client.executeRequest(request);
-        final long totalNumberOfEntries = lookupResponse.getPagingLinks().getTotalNumberOfEntries();
-
-        /**
-         * Assumption is that we can only pull at max, the last 100 entries as that is the maximum that
-         * the API can return in a single request.
-         * This method could be updated pretty easily to support larger numbers, submit a PR :)
-         */
-        final long pageNumber  = totalNumberOfEntries / numberOfBuilds;
-        request.updatePageOptions(new PageOptions(pageNumber, numberOfBuilds));
-
-        // Execute the request for the correct page of results.
-        final ListBuildsResponse response = client.executeRequest(request);
-
-        // But the results are still sorted in oldest to newest, we want newest to oldest, so reverse the order
-        // before returning.
-        final List<Build> reversed = new ArrayList<>(response.getBuilds());
-        return reversed;
-    }
-
-    /**
      * Helper method to retrieve all entries given a filter criteria.
      * The results will be ordered from NEWEST to OLDEST.
      *
@@ -133,7 +98,7 @@ public class BuildkiteClientUtils {
             hasMore = lookupResponse.getPagingLinks().hasNextUrl();
         }
 
-        // But the results are still sorted in oldest to newest, we want newest to oldest, so reverse the order
+        // But the results are still sorted in newest to oldest, presumably, we want oldest to newest, so reverse the order
         // before returning.
         final List<OBJECT> reversed = new ArrayList<>(entries);
         return reversed;
