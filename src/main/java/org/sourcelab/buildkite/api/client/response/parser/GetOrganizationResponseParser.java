@@ -21,12 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.request.ListOrganizationsRequest;
-import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
 import org.sourcelab.buildkite.api.client.response.Organization;
-import org.sourcelab.buildkite.api.client.response.PagingLinks;
-
-import java.util.Arrays;
 
 public class GetOrganizationResponseParser implements ResponseParser<Organization> {
     private static final Logger logger = LoggerFactory.getLogger(GetOrganizationResponseParser.class);

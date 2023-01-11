@@ -17,53 +17,48 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
-import org.sourcelab.buildkite.api.client.response.ListPipelinesResponse;
-import org.sourcelab.buildkite.api.client.response.parser.ListPipelinesResponseParser;
+import org.sourcelab.buildkite.api.client.response.Build;
+import org.sourcelab.buildkite.api.client.response.parser.GetBuildResponseParser;
 import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 
 import java.util.Objects;
 
-public class ListPipelinesRequest extends GetRequest<ListPipelinesResponse> implements PageableRequest<ListPipelinesResponse> {
-    private final PipelineFilters filters;
-    private PageOptions pageOptions;
+public class GetBuildRequest extends GetRequest<Build> {
+    private final GetBuildFilters filters;
 
     /**
      * Constructor.
-     * @param filters Search Criteria.
      */
-    public ListPipelinesRequest(final PipelineFilters filters) {
-        Objects.requireNonNull(filters);
-        this.filters = filters;
-        this.pageOptions = filters.getPageOptions() == null ? PageOptions.getDefault() : filters.getPageOptions();
+    public GetBuildRequest(final GetBuildFilters filters) {
+        this.filters = Objects.requireNonNull(filters);
     }
 
     @Override
     public String getPath() {
-        // TODO need to urlencode these?
-        if (filters.hasPipelineIdSlug()) {
-            return "/v2/organizations/" + filters.getOrgIdSlug() + "/pipelines/" + filters.getPipelineIdSlug();
-        }
-        return "/v2/organizations/" + filters.getOrgIdSlug() + "/pipelines";
+        return "/v2/organizations/" + filters.getOrgIdSlug()
+            + "/pipelines/" + filters.getPipelineIdSlug()
+            + "/builds/" + filters.getBuildNumber();
     }
 
+    /**
+     * KeyValue pairs of Request Parameters.
+     * @return RequestParameters associated with request.
+     */
     @Override
     public RequestParameters getRequestParameters() {
         final RequestParametersBuilder builder = RequestParameters.newBuilder();
-
-        // Paging options
-        builder.withParameter("per_page", pageOptions.getPerPage());
-        builder.withParameter("page", pageOptions.getPage());
-
+        if (filters.getIncludeRetriedJobs() != null) {
+            if (filters.getIncludeRetriedJobs()) {
+                builder.withParameter("include_retried_jobs", "true");
+            } else {
+                builder.withParameter("include_retried_jobs", "false");
+            }
+        }
         return builder.build();
     }
 
     @Override
-    public ResponseParser<ListPipelinesResponse> getResponseParser() {
-        return new ListPipelinesResponseParser(this);
-    }
-
-    @Override
-    public void updatePageOptions(final PageOptions pageOptions) {
-        this.pageOptions = Objects.requireNonNull(pageOptions);
+    public ResponseParser<Build> getResponseParser() {
+        return new GetBuildResponseParser();
     }
 }

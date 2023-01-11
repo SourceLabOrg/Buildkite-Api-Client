@@ -42,7 +42,6 @@ public class BuildFilters implements Filters {
 
     private final String orgIdSlug;
     private final String pipelineIdSlug;
-    private final Long buildNumber;
 
 
     /**
@@ -69,8 +68,7 @@ public class BuildFilters implements Filters {
         final Set<String> states,
         final PageOptions pageOptions,
         final String orgIdSlug,
-        final String pipelineSlugId,
-        final Long buildNumber
+        final String pipelineSlugId
     ) {
         this.branches = Collections.unmodifiableSet(new HashSet<>(branches));
         this.commits = Collections.unmodifiableSet(new HashSet<>(commits));
@@ -84,7 +82,6 @@ public class BuildFilters implements Filters {
         this.pageOptions = pageOptions == null ? PageOptions.getDefault() : pageOptions;
         this.orgIdSlug = orgIdSlug;
         this.pipelineIdSlug = pipelineSlugId;
-        this.buildNumber = buildNumber;
     }
 
     public Set<String> getBranches() {
@@ -143,27 +140,21 @@ public class BuildFilters implements Filters {
         return hasOrgIdSlug() && pipelineIdSlug != null;
     }
 
-    public Long getBuildNumber() {
-        return buildNumber;
-    }
-
-    public boolean hasBuildNumber() {
-        return hasPipelineIdSlug() && buildNumber != null;
-    }
-
     @Override
     public String toString() {
-        return "BuildRequestOptions{"
-            + "branches=" + branches
-            + ", commits=" + commits
-            + ", createdFrom=" + createdFrom
-            + ", createdTo=" + createdTo
-            + ", creator='" + creator + '\''
-            + ", finishedFrom=" + finishedFrom
-            + ", includeRetriedJobs=" + includeRetriedJobs
-            + ", metaData=" + metaData
-            + ", state=" + states
-            + ", pageOptions=" + pageOptions
-            + '}';
+        return "BuildFilters{"
+                + "branches=" + branches
+                + ", commits=" + commits
+                + ", createdFrom=" + createdFrom
+                + ", createdTo=" + createdTo
+                + ", creator='" + creator + '\''
+                + ", finishedFrom=" + finishedFrom
+                + ", includeRetriedJobs=" + includeRetriedJobs
+                + ", metaData=" + metaData
+                + ", states=" + states
+                + ", pageOptions=" + pageOptions
+                + ", orgIdSlug='" + orgIdSlug + '\''
+                + ", pipelineIdSlug='" + pipelineIdSlug + '\''
+                + '}';
     }
 }

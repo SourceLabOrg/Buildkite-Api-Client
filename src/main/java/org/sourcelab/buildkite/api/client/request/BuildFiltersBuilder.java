@@ -17,6 +17,8 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
+import org.sourcelab.buildkite.api.client.exception.BuilderValidationException;
+
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,11 +50,6 @@ public final class BuildFiltersBuilder {
      * If pipelineSlugId is provided, then orgIdSlug MUST be provided.
      */
     private String pipelineIdSlug = null;
-
-    /**
-     * If buildNumber is provided, then pipelineIdSlug (and thus orgIdSlug) MUST be provided.
-     */
-    private Long buildNumber = null;
 
     /**
      * Constructor.
@@ -309,25 +306,16 @@ public final class BuildFiltersBuilder {
         return withOrganization(orgIdSlug);
     }
 
-    public BuildFiltersBuilder withBuildNumber(final String orgIdSlug, final String pipelineIdSlug, final Long buildNumber) {
-        this.buildNumber = buildNumber;
-        return withPipeline(orgIdSlug, pipelineIdSlug);
-    }
-
     /**
      * New BuildFilters instance using configured properties.
      * @return New BuildFilters instance using configured properties.
+     * @throws BuilderValidationException if not valid or complete.
      */
     public BuildFilters build() {
         // Validation
-        if (buildNumber != null) {
-            if (pipelineIdSlug == null) {
-                throw new IllegalStateException("If BuildNumber is provided, then Pipeline must be provided.");
-            }
-        }
         if (pipelineIdSlug != null) {
             if (orgIdSlug == null) {
-                throw new IllegalStateException("If Pipeline is provided, then Organization must be provided.");
+                throw new BuilderValidationException("If Pipeline is provided, then Organization must be provided.");
             }
         }
 
@@ -343,8 +331,7 @@ public final class BuildFiltersBuilder {
             states,
             pageOptions,
             orgIdSlug,
-            pipelineIdSlug,
-            buildNumber
+            pipelineIdSlug
         );
     }
 }

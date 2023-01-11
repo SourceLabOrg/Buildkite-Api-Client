@@ -15,60 +15,53 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.response;
+package org.sourcelab.buildkite.api.client.exception;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.sourcelab.buildkite.api.client.response.Error;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents an Error response from the REST Api.
+ * Thrown if request submitted to API comes back as invalid.
  */
-public class ErrorResponse {
-    private final String message;
+public class InvalidRequestException extends BuildkiteException {
     private final List<Error> errors;
+
+     /**
+     * Constructor.
+     * @param message Error message.
+      */
+    public InvalidRequestException(final String message) {
+        this(message, Collections.emptyList());
+    }
 
     /**
      * Constructor.
      * @param message Error message.
+     * @param cause Underlying error cause.
      */
-    @JsonCreator
-    public ErrorResponse(
-        @JsonProperty("message") final String message,
-        @JsonProperty("errors") final List<Error> errors
-    ) {
-        this.message = message;
-        if (errors == null) {
-            this.errors = Collections.emptyList();
-        } else {
-            this.errors = Collections.unmodifiableList(new ArrayList<>(errors));
-        }
+    public InvalidRequestException(final String message, final Exception cause) {
+        super(message, cause);
+        errors = Collections.emptyList();
     }
 
     /**
-     * Error message value.
-     * @return Error message value.
+     * Constructor.
+     * @param message Error message.
+     * @param errors Underlying errors, if any.
      */
-    public String getMessage() {
-        return message;
+    public InvalidRequestException(final String message, final List<Error> errors) {
+        super(message);
+        this.errors = Collections.unmodifiableList(new ArrayList<>(errors));
     }
 
     /**
-     * Optionally returned by API, the specific fields with errors.
-     * @return List of specific field errors.
+     * Get errors associated with the request.
+     * @return Errors associated with the request.
      */
     public List<Error> getErrors() {
         return errors;
-    }
-
-    @Override
-    public String toString() {
-        return "ErrorResponse{"
-            + "message='" + message + '\''
-            + ", errors=" + errors
-            + '}';
     }
 }

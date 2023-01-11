@@ -17,34 +17,41 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
-import org.sourcelab.buildkite.api.client.response.Pipeline;
-import org.sourcelab.buildkite.api.client.response.parser.GetPipelineResponseParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.sourcelab.buildkite.api.client.exception.RequestParsingException;
+import org.sourcelab.buildkite.api.client.response.Build;
+import org.sourcelab.buildkite.api.client.response.parser.GetBuildResponseParser;
+import org.sourcelab.buildkite.api.client.response.parser.JacksonFactory;
 import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 
-import java.util.Objects;
-
-public class GetPipelineRequest extends GetRequest<Pipeline> {
-    private final String orgIdSlug;
-    private final String pipelineIdSlug;
+public class CreateBuildRequest extends PostRequest<Build> {
+    private final CreateBuildOptions buildOptions;
 
     /**
      * Constructor.
-     *
-     * @param orgIdSlug Organization to retrieve pipeline for.
-     * @param pipelineIdSlug Pipeline to retrieve.
      */
-    public GetPipelineRequest(final String orgIdSlug, final String pipelineIdSlug) {
-        this.pipelineIdSlug = Objects.requireNonNull(pipelineIdSlug);
-        this.orgIdSlug = Objects.requireNonNull(orgIdSlug);;
+    public CreateBuildRequest(final CreateBuildOptions buildOptions) {
+        this.buildOptions = buildOptions;
     }
 
     @Override
     public String getPath() {
-        return "/v2/organizations/" + orgIdSlug + "/pipelines/" + pipelineIdSlug;
+        return "/v2/organizations/" + buildOptions.getOrganizationIdSlug()
+            + "/pipelines/" + buildOptions.getPipelineIdSlug()
+            + "/builds";
     }
 
     @Override
-    public ResponseParser<Pipeline> getResponseParser() {
-        return new GetPipelineResponseParser();
+    public String getRequestBody() {
+        try {
+            return JacksonFactory.newInstance().writeValueAsString(buildOptions);
+        } catch (JsonProcessingException e) {
+            throw new RequestParsingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseParser<Build> getResponseParser() {
+        return new GetBuildResponseParser();
     }
 }

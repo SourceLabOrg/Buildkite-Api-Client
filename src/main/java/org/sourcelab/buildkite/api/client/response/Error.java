@@ -15,36 +15,42 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.request;
+package org.sourcelab.buildkite.api.client.response;
 
-import org.sourcelab.buildkite.api.client.response.Pipeline;
-import org.sourcelab.buildkite.api.client.response.parser.GetPipelineResponseParser;
-import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Objects;
-
-public class GetPipelineRequest extends GetRequest<Pipeline> {
-    private final String orgIdSlug;
-    private final String pipelineIdSlug;
+public class Error {
+    private final String field;
+    private final String code;
 
     /**
      * Constructor.
-     *
-     * @param orgIdSlug Organization to retrieve pipeline for.
-     * @param pipelineIdSlug Pipeline to retrieve.
+     * @param field The field with the error.
+     * @param code The error code relating to the field.
      */
-    public GetPipelineRequest(final String orgIdSlug, final String pipelineIdSlug) {
-        this.pipelineIdSlug = Objects.requireNonNull(pipelineIdSlug);
-        this.orgIdSlug = Objects.requireNonNull(orgIdSlug);;
+    @JsonCreator
+    public Error(
+        @JsonProperty("field") final String field,
+        @JsonProperty("code") final String code
+    ) {
+        this.field = field;
+        this.code = code;
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     @Override
-    public String getPath() {
-        return "/v2/organizations/" + orgIdSlug + "/pipelines/" + pipelineIdSlug;
-    }
-
-    @Override
-    public ResponseParser<Pipeline> getResponseParser() {
-        return new GetPipelineResponseParser();
+    public String toString() {
+        return "Error{"
+            + "field='" + field + '\''
+            + ", code='" + code + '\''
+            + '}';
     }
 }

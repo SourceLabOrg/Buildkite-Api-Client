@@ -19,6 +19,8 @@ package org.sourcelab.buildkite.api.client.http;
 
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -27,6 +29,7 @@ import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.net.URIBuilder;
 import org.sourcelab.buildkite.api.client.Configuration;
@@ -35,6 +38,7 @@ import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.request.RequestParameter;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -87,6 +91,10 @@ public class HttpComponentsClient implements Client {
                     return executeGetRequest(request, httpClient);
                 case DELETE:
                     return executeDeleteRequest(request, httpClient);
+                case PUT:
+                    return executePutRequest(request, httpClient);
+                case POST:
+                    return executePostRequest(request, httpClient);
                 default:
                     throw new IllegalArgumentException("Invalid HttpType: " + request.getMethod());
             }
@@ -95,9 +103,49 @@ public class HttpComponentsClient implements Client {
         }
     }
 
+    private HttpResult executePostRequest(final Request request, final CloseableHttpClient httpClient) {
+        try {
+            final HttpPost httpPost = new HttpPost(generateRequestUri(request));
+            httpPost.setEntity(new StringEntity(request.getRequestBody()));
+            return submitRequest(httpPost, httpClient);
+        } catch (final Exception exception) {
+            throw new HttpRequestException(exception.getMessage(), exception);
+        }
+    }
+
+    private HttpResult executePutRequest(final Request request, final CloseableHttpClient httpClient) {
+        try {
+            final HttpPut httpPut = new HttpPut(generateRequestUri(request));
+            return submitRequest(httpPut, httpClient);
+        } catch (final Exception exception) {
+            throw new HttpRequestException(exception.getMessage(), exception);
+        }
+    }
+
     private HttpResult executeGetRequest(final Request request, final CloseableHttpClient httpClient) {
         try {
-            // Construct URI including our request parameters.
+            final HttpGet httpGet = new HttpGet(generateRequestUri(request));
+            return submitRequest(httpGet, httpClient);
+        } catch (final Exception exception) {
+            throw new HttpRequestException(exception.getMessage(), exception);
+        }
+    }
+
+    private HttpResult executeDeleteRequest(final Request request, final CloseableHttpClient httpClient) {
+        final HttpDelete httpDelete = new HttpDelete(generateRequestUri(request));
+        return submitRequest(httpDelete, httpClient);
+    }
+
+    /**
+     * Generate URI for the request, including any request parameters.
+     *
+     * @param request The request to generate URI for.
+     * @return Generate URI for the request, including any request parameters.
+     * @throws HttpRequestException on URI exceptions.
+     */
+    private URI generateRequestUri(final Request request) {
+        // Construct URI including our request parameters.
+        try {
             final String path = configuration.getApiUrl() + request.getPath();
             final URIBuilder uriBuilder = new URIBuilder(path)
                     .setCharset(StandardCharsets.UTF_8);
@@ -108,20 +156,10 @@ public class HttpComponentsClient implements Client {
                     uriBuilder.setParameter(requestParameter.getName(), value);
                 }
             }
-
-            final HttpGet httpGet = new HttpGet(uriBuilder.build());
-            return submitRequest(httpGet, httpClient);
+            return uriBuilder.build();
         } catch (final URISyntaxException uriSyntaxException) {
             throw new HttpRequestException(uriSyntaxException.getMessage(), uriSyntaxException);
-        } catch (final Exception exception) {
-            throw new HttpRequestException(exception.getMessage(), exception);
         }
-    }
-
-    private HttpResult executeDeleteRequest(final Request request, final CloseableHttpClient httpClient) {
-        final String path = configuration.getApiUrl() + request.getPath();
-        final HttpDelete httpDelete = new HttpDelete(path);
-        return submitRequest(httpDelete, httpClient);
     }
 
     private HttpResult submitRequest(final ClassicHttpRequest httpRequest, final CloseableHttpClient httpClient) {

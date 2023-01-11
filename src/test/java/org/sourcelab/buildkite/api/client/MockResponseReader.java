@@ -15,36 +15,27 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.request;
+package org.sourcelab.buildkite.api.client;
 
-import org.sourcelab.buildkite.api.client.response.Pipeline;
-import org.sourcelab.buildkite.api.client.response.parser.GetPipelineResponseParser;
-import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
+import org.apache.commons.io.IOUtils;
 
-import java.util.Objects;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
-public class GetPipelineRequest extends GetRequest<Pipeline> {
-    private final String orgIdSlug;
-    private final String pipelineIdSlug;
-
+public class MockResponseReader {
     /**
-     * Constructor.
-     *
-     * @param orgIdSlug Organization to retrieve pipeline for.
-     * @param pipelineIdSlug Pipeline to retrieve.
+     * Utility method to help load mock responses from resources.
+     * @param fileName file name to load from resources
+     * @return The contents of the file, as a UTF-8 string.
+     * @throws RuntimeException on error reading from resource file.
      */
-    public GetPipelineRequest(final String orgIdSlug, final String pipelineIdSlug) {
-        this.pipelineIdSlug = Objects.requireNonNull(pipelineIdSlug);
-        this.orgIdSlug = Objects.requireNonNull(orgIdSlug);;
-    }
-
-    @Override
-    public String getPath() {
-        return "/v2/organizations/" + orgIdSlug + "/pipelines/" + pipelineIdSlug;
-    }
-
-    @Override
-    public ResponseParser<Pipeline> getResponseParser() {
-        return new GetPipelineResponseParser();
+    public static String readFile(final String fileName) {
+        final URL inputFile = MockResponseReader.class.getClassLoader().getResource("mockResponses/" + fileName);
+        try {
+            return IOUtils.toString(inputFile, StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

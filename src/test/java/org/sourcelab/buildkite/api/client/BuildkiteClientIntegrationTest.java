@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
+import org.sourcelab.buildkite.api.client.request.CreateBuildOptions;
+import org.sourcelab.buildkite.api.client.request.CreateBuildOptionsBuilder;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
@@ -193,6 +195,7 @@ class BuildkiteClientIntegrationTest {
         // Get the latest 10 results.
         final List<Build> builds = BuildkiteClientUtils.retrieveNewestBuilds(10, filters, client);
         logger.info("Found: {}", builds);
+        builds.forEach((build) -> logger.info("Build {} {} ", build.getNumber(), build.getCreatedAt()));
     }
 
     /**
@@ -261,5 +264,27 @@ class BuildkiteClientIntegrationTest {
 
         assertNotNull(result, "Result should not be null.");
         assertNotNull(result.getPagingLinks(), "Paging Links should not be null.");
+    }
+
+    @Test
+    void rebuildBuild() {
+        final Build build = client.rebuildBuild(orgIdSlug, pipelineIdSlug, 10);
+        logger.info("Build: {}", build);
+    }
+
+    @Test
+    void createBuild() {
+        final CreateBuildOptionsBuilder builder = CreateBuildOptions.newBuilder()
+                .withAuthor("First Last", "first.last@email.com")
+                .withBranch("main")
+                .withCommit("head")
+                .withMessage("Test new build")
+                .withOrganization(orgIdSlug)
+                .withPipeline(pipelineIdSlug)
+                .withMeta("meta-key", "meta-value")
+                .withEnv("env_key", "env_value");
+
+        final Build build = client.createBuild(builder);
+        logger.info("Build: {}", build);
     }
 }

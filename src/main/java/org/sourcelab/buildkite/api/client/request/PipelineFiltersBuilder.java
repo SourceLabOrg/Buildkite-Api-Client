@@ -17,6 +17,8 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
+import org.sourcelab.buildkite.api.client.exception.BuilderValidationException;
+
 /**
  * Builder for {@link BuildFilters}.
  */
@@ -100,16 +102,17 @@ public final class PipelineFiltersBuilder {
     /**
      * New OrganizationFilters instance using configured properties.
      * @return New OrganizationFilters instance using configured properties.
+     * @throws BuilderValidationException if not valid or complete.
      */
     public PipelineFilters build() {
         // Validation
         if (pipelineIdSlug != null) {
             if (orgIdSlug == null) {
-                throw new IllegalStateException("If Pipeline is provided, then Organization must be provided.");
+                throw new BuilderValidationException("If Pipeline is provided, then Organization must be provided.");
             }
         }
         if (orgIdSlug == null) {
-            throw new IllegalStateException("Organization must be provided.");
+            throw new BuilderValidationException("Organization must be provided.");
         }
 
         return new PipelineFilters(

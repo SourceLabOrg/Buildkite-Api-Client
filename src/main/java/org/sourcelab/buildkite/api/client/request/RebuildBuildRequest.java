@@ -17,34 +17,34 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
-import org.sourcelab.buildkite.api.client.response.Pipeline;
-import org.sourcelab.buildkite.api.client.response.parser.GetPipelineResponseParser;
+import org.sourcelab.buildkite.api.client.response.Build;
+import org.sourcelab.buildkite.api.client.response.parser.GetBuildResponseParser;
 import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 
-import java.util.Objects;
-
-public class GetPipelineRequest extends GetRequest<Pipeline> {
+public class RebuildBuildRequest extends PutRequest<Build> {
     private final String orgIdSlug;
     private final String pipelineIdSlug;
+    private final long buildNumber;
 
     /**
      * Constructor.
-     *
-     * @param orgIdSlug Organization to retrieve pipeline for.
-     * @param pipelineIdSlug Pipeline to retrieve.
      */
-    public GetPipelineRequest(final String orgIdSlug, final String pipelineIdSlug) {
-        this.pipelineIdSlug = Objects.requireNonNull(pipelineIdSlug);
-        this.orgIdSlug = Objects.requireNonNull(orgIdSlug);;
+    public RebuildBuildRequest(final String orgIdSlug, final String pipelineIdSlug, final long buildNumber) {
+        this.orgIdSlug = orgIdSlug;
+        this.pipelineIdSlug = pipelineIdSlug;
+        this.buildNumber = buildNumber;
     }
 
     @Override
     public String getPath() {
-        return "/v2/organizations/" + orgIdSlug + "/pipelines/" + pipelineIdSlug;
+        return "/v2/organizations/" + orgIdSlug
+            + "/pipelines/" + pipelineIdSlug
+            + "/builds/" + buildNumber + "/rebuild";
+
     }
 
     @Override
-    public ResponseParser<Pipeline> getResponseParser() {
-        return new GetPipelineResponseParser();
+    public ResponseParser<Build> getResponseParser() {
+        return new GetBuildResponseParser();
     }
 }

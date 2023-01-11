@@ -17,34 +17,14 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
-import org.sourcelab.buildkite.api.client.response.Pipeline;
-import org.sourcelab.buildkite.api.client.response.parser.GetPipelineResponseParser;
-import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
-
-import java.util.Objects;
-
-public class GetPipelineRequest extends GetRequest<Pipeline> {
-    private final String orgIdSlug;
-    private final String pipelineIdSlug;
-
-    /**
-     * Constructor.
-     *
-     * @param orgIdSlug Organization to retrieve pipeline for.
-     * @param pipelineIdSlug Pipeline to retrieve.
-     */
-    public GetPipelineRequest(final String orgIdSlug, final String pipelineIdSlug) {
-        this.pipelineIdSlug = Objects.requireNonNull(pipelineIdSlug);
-        this.orgIdSlug = Objects.requireNonNull(orgIdSlug);;
-    }
-
+/**
+ * Abstract representation of a POST http request.
+ *
+ * @param <T> The parsed response object from the request.
+ */
+public abstract class PostRequest<T> implements Request<T> {
     @Override
-    public String getPath() {
-        return "/v2/organizations/" + orgIdSlug + "/pipelines/" + pipelineIdSlug;
-    }
-
-    @Override
-    public ResponseParser<Pipeline> getResponseParser() {
-        return new GetPipelineResponseParser();
+    public HttpMethod getMethod() {
+        return HttpMethod.POST;
     }
 }

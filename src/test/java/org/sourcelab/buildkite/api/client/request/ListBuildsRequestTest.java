@@ -54,15 +54,4 @@ class ListBuildsRequestTest {
         ).getPath();
         assertEquals("/v2/organizations/my-org-id/pipelines/my-pipeline/builds", path);
     }
-
-    @Test
-    void getPath_singleBuild()
-    {
-        // Call method under test.
-        final String path = new ListBuildsRequest(BuildFilters.newBuilder()
-                .withBuildNumber("my-org-id", "my-pipeline", 25L)
-                .build()
-        ).getPath();
-        assertEquals("/v2/organizations/my-org-id/pipelines/my-pipeline/builds/25", path);
-    }
 }

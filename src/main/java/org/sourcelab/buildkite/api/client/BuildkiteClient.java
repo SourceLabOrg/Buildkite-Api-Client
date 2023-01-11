@@ -21,13 +21,21 @@ import org.sourcelab.buildkite.api.client.exception.BuildkiteException;
 import org.sourcelab.buildkite.api.client.exception.InvalidAccessTokenException;
 import org.sourcelab.buildkite.api.client.exception.InvalidAllowedIpAddressException;
 import org.sourcelab.buildkite.api.client.exception.InvalidPagingRequestException;
+import org.sourcelab.buildkite.api.client.exception.InvalidRequestException;
 import org.sourcelab.buildkite.api.client.exception.NotFoundException;
 import org.sourcelab.buildkite.api.client.http.Client;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
+import org.sourcelab.buildkite.api.client.request.CancelBuildRequest;
+import org.sourcelab.buildkite.api.client.request.CreateBuildOptions;
+import org.sourcelab.buildkite.api.client.request.CreateBuildOptionsBuilder;
+import org.sourcelab.buildkite.api.client.request.CreateBuildRequest;
 import org.sourcelab.buildkite.api.client.request.DeleteAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetAccessTokenRequest;
+import org.sourcelab.buildkite.api.client.request.GetBuildFilters;
+import org.sourcelab.buildkite.api.client.request.GetBuildFiltersBuilder;
+import org.sourcelab.buildkite.api.client.request.GetBuildRequest;
 import org.sourcelab.buildkite.api.client.request.GetMetaRequest;
 import org.sourcelab.buildkite.api.client.request.GetOrganizationRequest;
 import org.sourcelab.buildkite.api.client.request.GetPipelineRequest;
@@ -41,12 +49,15 @@ import org.sourcelab.buildkite.api.client.request.OrganizationFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.PageOptions;
 import org.sourcelab.buildkite.api.client.request.PageableRequest;
 import org.sourcelab.buildkite.api.client.request.PingRequest;
-import org.sourcelab.buildkite.api.client.request.PipelineFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.PipelineFilters;
+import org.sourcelab.buildkite.api.client.request.PipelineFiltersBuilder;
+import org.sourcelab.buildkite.api.client.request.RebuildBuildRequest;
 import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
+import org.sourcelab.buildkite.api.client.response.Error;
 import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
@@ -60,9 +71,11 @@ import org.sourcelab.buildkite.api.client.response.Pipeline;
 import org.sourcelab.buildkite.api.client.response.parser.ErrorResponseParser;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * API Client for Buildkite's REST Api.
@@ -297,6 +310,101 @@ public class BuildkiteClient {
     }
 
     /**
+     * Retrieve a specific build based on the filter criteria.
+     *
+     * @param filters Filter criteria.
+     * @return The build which matches the criteria if found.
+     *
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Optional<Build> getBuild(final GetBuildFiltersBuilder filters) {
+        return getBuild(filters.build());
+    }
+
+    /**
+     * Retrieve a specific build based on the filter criteria.
+     *
+     * @param organizationSlugId Organization associated with the build.
+     * @param pipelineSlugId Pipeline associated with the build.
+     * @param buildNumber The build number.
+     * @return The build which matches the criteria if found.
+     *
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Optional<Build> getBuild(final String organizationSlugId, final String pipelineSlugId, final long buildNumber) {
+        return getBuild(GetBuildFilters.newBuilder()
+            .withOrgIdSlug(organizationSlugId)
+            .withPipelineIdSlug(pipelineSlugId)
+            .withBuildNumber(buildNumber)
+        );
+    }
+
+    /**
+     * Retrieve a specific build based on the filter criteria.
+     *
+     * @param filters Filter criteria.
+     * @return The build which matches the criteria if found.
+     *
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Optional<Build> getBuild(final GetBuildFilters filters) {
+        final Build build = executeRequest(new GetBuildRequest(filters));
+        return Optional.ofNullable(build);
+    }
+
+    /**
+     * Cancels the build if its state is either scheduled or running.
+     *
+     * @param organizationSlugId Organization associated with the build.
+     * @param pipelineSlugId Pipeline associated with the build.
+     * @param buildNumber The build number.
+     * @return Updated Build instance.
+     *
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Build cancelBuild(final String organizationSlugId, final String pipelineSlugId, final long buildNumber) {
+        return executeRequest(new CancelBuildRequest(organizationSlugId, pipelineSlugId, buildNumber));
+    }
+
+    /**
+     * Creates a new build to be executed.
+     *
+     * @param createBuildOptions Defines the build to be created.
+     * @return Created Build instance.
+     *
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Build createBuild(final CreateBuildOptionsBuilder createBuildOptions) {
+        return createBuild(createBuildOptions.build());
+    }
+
+    /**
+     * Creates a new build to be executed.
+     *
+     * @param createBuildOptions Defines the build to be created.
+     * @return Created Build instance.
+     *
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Build createBuild(final CreateBuildOptions createBuildOptions) {
+        return executeRequest(new CreateBuildRequest(createBuildOptions));
+    }
+
+    /**
+     * Retries a build.
+     *
+     * @param organizationSlugId Organization associated with the build.
+     * @param pipelineSlugId Pipeline associated with the build.
+     * @param buildNumber The build number.
+     * @return Updated Build instance.
+     *
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Build rebuildBuild(final String organizationSlugId, final String pipelineSlugId, final long buildNumber) {
+        return executeRequest(new RebuildBuildRequest(organizationSlugId, pipelineSlugId, buildNumber));
+    }
+
+    /**
      * Retrieve the next page of results from the previously retrieved request.
      *
      * @param <T> The parsed return object representing the result.
@@ -444,7 +552,7 @@ public class BuildkiteClient {
         final HttpResult result = httpClient.executeRequest(request);
 
         // Handle Errors based on HttpCode.
-        if (result.getStatus() != 200 && result.getStatus() != 204) {
+        if (result.getStatus() != 200 && result.getStatus() != 201 && result.getStatus() != 204) {
             handleError(result);
         }
 
@@ -460,9 +568,11 @@ public class BuildkiteClient {
     private void handleError(final HttpResult errorResult) throws BuildkiteException {
         // Attempt to parse error response.
         String errorMessage = null;
+        List<Error> errors = Collections.emptyList();
         try {
             final ErrorResponse errorResponse = new ErrorResponseParser().parseResponse(errorResult);
             errorMessage = errorResponse.getMessage();
+            errors = errorResponse.getErrors();
         } catch (final IOException e) {
             errorMessage = errorResult.getContent();
         }
@@ -478,18 +588,24 @@ public class BuildkiteClient {
             case 403:
                 throw new InvalidAllowedIpAddressException(
                     errorMessage == null
-                        ?
-                            "API requested from an IP address not specifically allowed by your AccessToken. "
-                            + "Check the 'Allowed IP Addresses' field on your Access Token"
-                        : errorMessage
+                    ?
+                        "API requested from an IP address not specifically allowed by your AccessToken. "
+                        + "Check the 'Allowed IP Addresses' field on your Access Token"
+                    : errorMessage
                 );
             case 404:
                 throw new NotFoundException(
                     errorMessage == null
-                            ?
-                            "The URL or Resource Request could not be found"
-                            : errorMessage
+                        ?
+                        "The URL or Resource Request could not be found"
+                        : errorMessage
                 );
+            case 422:
+                String validationErrorMessage = (( errorMessage != null) ? errorMessage : "The submitted request was invalid. ");
+                validationErrorMessage += "\n" + errors.stream()
+                    .map((error) -> error.getField() + ": " + error.getCode())
+                    .collect(Collectors.joining("\n"));
+                throw new InvalidRequestException(validationErrorMessage, errors);
             default:
                 throw new BuildkiteException(
                     errorMessage == null ? "Unknown/Unhandled Error HttpCode: " + errorResult.getStatus() : errorMessage

@@ -22,6 +22,9 @@ import org.sourcelab.buildkite.api.client.response.ErrorResponse;
 
 import java.io.IOException;
 
+/**
+ * For parsing Error responses from the Buildkite API.
+ */
 public class ErrorResponseParser implements ResponseParser<ErrorResponse> {
     @Override
     public ErrorResponse parseResponse(final HttpResult result) throws IOException {

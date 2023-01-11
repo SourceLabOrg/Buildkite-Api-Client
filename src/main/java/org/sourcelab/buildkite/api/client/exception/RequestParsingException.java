@@ -15,36 +15,28 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.request;
+package org.sourcelab.buildkite.api.client.exception;
 
-import org.sourcelab.buildkite.api.client.response.Pipeline;
-import org.sourcelab.buildkite.api.client.response.parser.GetPipelineResponseParser;
-import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
-
-import java.util.Objects;
-
-public class GetPipelineRequest extends GetRequest<Pipeline> {
-    private final String orgIdSlug;
-    private final String pipelineIdSlug;
+/**
+ * Thrown if the library is unable to serialize a request body.
+ * This likely results from a bug in the Buildkite Api Client library, with it not understanding
+ * how to properly parse a given response.
+ */
+public class RequestParsingException extends BuildkiteException {
+    /**
+     * Constructor.
+     * @param message Error message.
+     */
+    public RequestParsingException(final String message) {
+        super(message);
+    }
 
     /**
      * Constructor.
-     *
-     * @param orgIdSlug Organization to retrieve pipeline for.
-     * @param pipelineIdSlug Pipeline to retrieve.
+     * @param message Error message.
+     * @param cause Underlying exception.
      */
-    public GetPipelineRequest(final String orgIdSlug, final String pipelineIdSlug) {
-        this.pipelineIdSlug = Objects.requireNonNull(pipelineIdSlug);
-        this.orgIdSlug = Objects.requireNonNull(orgIdSlug);;
-    }
-
-    @Override
-    public String getPath() {
-        return "/v2/organizations/" + orgIdSlug + "/pipelines/" + pipelineIdSlug;
-    }
-
-    @Override
-    public ResponseParser<Pipeline> getResponseParser() {
-        return new GetPipelineResponseParser();
+    public RequestParsingException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

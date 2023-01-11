@@ -17,6 +17,7 @@
 
 package org.sourcelab.buildkite.api.client;
 
+import org.sourcelab.buildkite.api.client.exception.BuilderValidationException;
 import org.sourcelab.buildkite.api.client.http.ClientFactory;
 import org.sourcelab.buildkite.api.client.http.DefaultClientFactory;
 
@@ -56,17 +57,17 @@ public final class ConfigurationBuilder {
 
     /**
      * Validates that the supplied values are correct.
-     * @throws IllegalStateException if improper values defined.
+     * @throws BuilderValidationException if not valid or complete.
      */
     private void validate() {
         if (apiToken == null || apiToken.trim().isEmpty()) {
-            throw new IllegalStateException("The 'ApiToken' property must be configured.");
+            throw new BuilderValidationException("The 'ApiToken' property must be configured.");
         }
         if (clientFactory == null) {
-            throw new IllegalStateException("The 'ClientFactory' property must be configured.");
+            throw new BuilderValidationException("The 'ClientFactory' property must be configured.");
         }
         if (apiUrl == null || apiUrl.trim().isEmpty()) {
-            throw new IllegalStateException("The 'ApiUrl' property must be configured.");
+            throw new BuilderValidationException("The 'ApiUrl' property must be configured.");
         }
     }
 

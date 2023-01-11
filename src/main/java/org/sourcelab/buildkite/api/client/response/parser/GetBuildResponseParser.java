@@ -15,36 +15,15 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.request;
+package org.sourcelab.buildkite.api.client.response.parser;
 
-import org.sourcelab.buildkite.api.client.response.Pipeline;
-import org.sourcelab.buildkite.api.client.response.parser.GetPipelineResponseParser;
-import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.response.Build;
 
-import java.util.Objects;
-
-public class GetPipelineRequest extends GetRequest<Pipeline> {
-    private final String orgIdSlug;
-    private final String pipelineIdSlug;
-
-    /**
-     * Constructor.
-     *
-     * @param orgIdSlug Organization to retrieve pipeline for.
-     * @param pipelineIdSlug Pipeline to retrieve.
-     */
-    public GetPipelineRequest(final String orgIdSlug, final String pipelineIdSlug) {
-        this.pipelineIdSlug = Objects.requireNonNull(pipelineIdSlug);
-        this.orgIdSlug = Objects.requireNonNull(orgIdSlug);;
-    }
-
+public class GetBuildResponseParser implements ResponseParser<Build> {
     @Override
-    public String getPath() {
-        return "/v2/organizations/" + orgIdSlug + "/pipelines/" + pipelineIdSlug;
-    }
-
-    @Override
-    public ResponseParser<Pipeline> getResponseParser() {
-        return new GetPipelineResponseParser();
+    public Build parseResponse(final HttpResult result) throws JsonProcessingException {
+        return JacksonFactory.newInstance().readValue(result.getContent(), Build.class);
     }
 }

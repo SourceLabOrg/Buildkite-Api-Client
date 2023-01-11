@@ -321,11 +321,6 @@ public class BuildkiteClientTest {
      * @throws RuntimeException on error reading from resource file.
      */
     protected String readFile(final String fileName) {
-        final URL inputFile = getClass().getClassLoader().getResource("mockResponses/" + fileName);
-        try {
-            return IOUtils.toString(inputFile, StandardCharsets.UTF_8);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
+        return MockResponseReader.readFile(fileName);
     }
 }

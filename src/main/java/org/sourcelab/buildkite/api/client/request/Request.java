@@ -17,6 +17,7 @@
 
 package org.sourcelab.buildkite.api.client.request;
 
+import org.sourcelab.buildkite.api.client.exception.RequestParsingException;
 import org.sourcelab.buildkite.api.client.exception.ResponseParsingException;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
 import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
@@ -47,6 +48,15 @@ public interface Request<T> {
      */
     default RequestParameters getRequestParameters() {
         return new RequestParameters(Collections.emptyList());
+    }
+
+    /**
+     * The Request body value.
+     * @return null if no request body is needed, or the request body as a String.
+     * @throws RequestParsingException if unable to generate request body due to some error.
+     */
+    default String getRequestBody() throws RequestParsingException {
+        return null;
     }
 
     /**
