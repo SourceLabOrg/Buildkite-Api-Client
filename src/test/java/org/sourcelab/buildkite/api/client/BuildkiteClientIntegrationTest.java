@@ -186,9 +186,9 @@ class BuildkiteClientIntegrationTest {
     @Test
     void retrieveAll_builds() {
         final BuildFilters filters = BuildFilters.newBuilder()
-                //.withStateChooser().passed()
-                .withCreator(userId)
-                .build();
+            //.withStateChooser().passed()
+            .withCreator(userId)
+            .build();
 
         // Get all builds.
         final List<Build> builds = BuildkiteClientUtils.retrieveAll(filters, ListBuildsRequest.class, Build.class, client);
@@ -199,10 +199,20 @@ class BuildkiteClientIntegrationTest {
      * Sanity test BuildkiteClientUtils.retrieveAll().
      */
     @Test
+    void getBuild() {
+        // Get builds.
+        final Optional<Build> builds = client.getBuild(orgIdSlug, pipelineIdSlug, 22);
+        logger.info("Found: {}", builds.get());
+    }
+
+    /**
+     * Sanity test BuildkiteClientUtils.retrieveAll().
+     */
+    @Test
     void retrieveAll_pipelines() {
         final PipelineFilters filters = PipelineFilters.newBuilder()
-                .withOrganization(orgIdSlug)
-                .build();
+            .withOrganization(orgIdSlug)
+            .build();
 
         // Get all builds.
         final List<Pipeline> pipelines = BuildkiteClientUtils.retrieveAll(

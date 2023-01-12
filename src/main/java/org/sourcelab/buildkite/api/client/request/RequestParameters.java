@@ -100,6 +100,14 @@ public class RequestParameters {
         return parameters.get(name);
     }
 
+    /**
+     * Total number of request parameters contained.
+     * @return Total number of request parameters contained.
+     */
+    public int size() {
+        return getParameters().size();
+    }
+
     @Override
     public String toString() {
         return "RequestParameters{"

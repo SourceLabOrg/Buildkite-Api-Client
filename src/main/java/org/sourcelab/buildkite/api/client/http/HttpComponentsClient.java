@@ -98,9 +98,14 @@ public class HttpComponentsClient implements Client {
                 default:
                     throw new IllegalArgumentException("Invalid HttpType: " + request.getMethod());
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (final IOException ioException) {
+            throw new HttpRequestException(ioException.getMessage(), ioException);
         }
+    }
+
+    @Override
+    public void close() {
+        // Not required in this implementation.
     }
 
     private HttpResult executePostRequest(final Request request, final CloseableHttpClient httpClient) {

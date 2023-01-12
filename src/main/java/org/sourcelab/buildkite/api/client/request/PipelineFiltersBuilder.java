@@ -25,7 +25,6 @@ import org.sourcelab.buildkite.api.client.exception.BuilderValidationException;
 public final class PipelineFiltersBuilder {
     private PageOptions pageOptions = null;
     private String orgIdSlug = null;
-    private String pipelineIdSlug;
 
     /**
      * Constructor.
@@ -88,37 +87,19 @@ public final class PipelineFiltersBuilder {
     }
 
     /**
-     * Filter by the given Organization and Pipeline.
-     * @param orgIdSlug Organization to filter by.
-     * @param pipelineIdSlug Pipeline to filter by.
-     * @return PipelineFIltersBuilder for method chaining.
-     */
-    public PipelineFiltersBuilder withPipeline(final String orgIdSlug, final String pipelineIdSlug) {
-        withOrganization(orgIdSlug);
-        this.pipelineIdSlug = pipelineIdSlug;
-        return this;
-    }
-
-    /**
      * New OrganizationFilters instance using configured properties.
      * @return New OrganizationFilters instance using configured properties.
      * @throws BuilderValidationException if not valid or complete.
      */
     public PipelineFilters build() {
         // Validation
-        if (pipelineIdSlug != null) {
-            if (orgIdSlug == null) {
-                throw new BuilderValidationException("If Pipeline is provided, then Organization must be provided.");
-            }
-        }
         if (orgIdSlug == null) {
             throw new BuilderValidationException("Organization must be provided.");
         }
 
         return new PipelineFilters(
             pageOptions,
-            orgIdSlug,
-            pipelineIdSlug
+            orgIdSlug
         );
     }
 }

@@ -17,6 +17,8 @@
 
 package org.sourcelab.buildkite.api.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sourcelab.buildkite.api.client.exception.BuildkiteException;
 import org.sourcelab.buildkite.api.client.exception.InvalidAccessTokenException;
 import org.sourcelab.buildkite.api.client.exception.InvalidAllowedIpAddressException;
@@ -53,12 +55,19 @@ import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.request.PipelineFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.RebuildBuildRequest;
 import org.sourcelab.buildkite.api.client.request.Request;
+import org.sourcelab.buildkite.api.client.request.RetryJobOptions;
+import org.sourcelab.buildkite.api.client.request.RetryJobOptionsBuilder;
+import org.sourcelab.buildkite.api.client.request.RetryJobRequest;
+import org.sourcelab.buildkite.api.client.request.UnblockJobOptions;
+import org.sourcelab.buildkite.api.client.request.UnblockJobOptionsBuilder;
+import org.sourcelab.buildkite.api.client.request.UnblockJobRequest;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.Error;
 import org.sourcelab.buildkite.api.client.response.ErrorResponse;
+import org.sourcelab.buildkite.api.client.response.Job;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
 import org.sourcelab.buildkite.api.client.response.ListPipelinesResponse;
@@ -79,9 +88,20 @@ import java.util.stream.Collectors;
 
 /**
  * API Client for Buildkite's REST Api.
+ *
+ * See API Documentation: {@see <a href="https://buildkite.com/docs/apis/rest-api">https://buildkite.com/docs/apis/rest-api</a>}
  */
 public class BuildkiteClient {
+    private static final Logger logger = LoggerFactory.getLogger(BuildkiteClient.class);
+
+    /**
+     * User provided configuration.
+     */
     private final Configuration configuration;
+
+    /**
+     * Underlying HTTP client.
+     */
     private final Client httpClient;
 
     /**
@@ -142,6 +162,8 @@ public class BuildkiteClient {
      * Retrieve all Organizations accessible to the current user/API access token.
      * Results will be paged.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/organizations#list-organizations">https://buildkite.com/docs/apis/rest-api/organizations#list-organizations</a>
+     *
      * @return All Organizations accessible to the current user/API access token. Results
      *         will be paged if the number of results exceeds 30.
      * @throws BuildkiteException if API returns an error response.
@@ -153,6 +175,8 @@ public class BuildkiteClient {
     /**
      * Retrieve all Organizations accessible to the current user/API access token.
      * Results will be paged.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/organizations#list-organizations">https://buildkite.com/docs/apis/rest-api/organizations#list-organizations</a>
      *
      * @param filters Filter criteria.
      * @return All Organizations accessible to the current user/API access token. Results
@@ -168,6 +192,8 @@ public class BuildkiteClient {
      * Retrieve all Organizations accessible to the current user/API access token.
      * Results will be paged.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/organizations#list-organizations">https://buildkite.com/docs/apis/rest-api/organizations#list-organizations</a>
+     *
      * @param filters Filter criteria.
      * @return All Organizations accessible to the current user/API access token. Results
      *         will be paged if the number of results exceeds 30.
@@ -180,6 +206,8 @@ public class BuildkiteClient {
 
     /**
      * Retrieve specific organization via its Organization slug id.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/organizations#get-an-organization">https://buildkite.com/docs/apis/rest-api/organizations#get-an-organization</a>
      *
      * @param organizationSlugId Slug of the organization to retrieve.
      * @return Organization matching the slug, if found.
@@ -195,6 +223,8 @@ public class BuildkiteClient {
      * Retrieve all Pipeline accessible to the current user/API access token for the given Organization.
      * Results will be paged.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/pipelines#list-pipelines">https://buildkite.com/docs/apis/rest-api/pipelines#list-pipelines</a>
+     *
      * @param filters Filter criteria.
      * @return All Pipelines accessible to the current user/API access token. Results
      *         will be paged if the number of results exceeds 30.
@@ -209,6 +239,8 @@ public class BuildkiteClient {
      * Retrieve all Pipelines accessible to the current user/API access token for the given Organization.
      * Results will be paged.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/pipelines#list-pipelines">https://buildkite.com/docs/apis/rest-api/pipelines#list-pipelines</a>
+     *
      * @param filters Filter criteria.
      * @return All Pipelines accessible to the current user/API access token. Results
      *         will be paged if the number of results exceeds 30.
@@ -222,6 +254,8 @@ public class BuildkiteClient {
     /**
      * Retrieve all Pipelines accessible to the current user/API access token for the given Organization.
      * Results will be paged.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/pipelines#list-pipelines">https://buildkite.com/docs/apis/rest-api/pipelines#list-pipelines</a>
      *
      * @param organizationSlugId Organization Slug Id to retrieve pipelines for.
      * @return All Pipelines accessible to the current user/API access token for the given Organization. Results
@@ -238,6 +272,8 @@ public class BuildkiteClient {
     /**
      * Retrieve specific pipeline via its Organization and Pipeline Slug Ids.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/pipelines#get-a-pipeline">https://buildkite.com/docs/apis/rest-api/pipelines#get-a-pipeline</a>
+     *
      * @param organizationSlugId Slug of the organization to retrieve.
      * @param pipelineSlugId Slug of the pipeline to retrieve.
      * @return Pipeline matching the slug, if found.
@@ -251,29 +287,10 @@ public class BuildkiteClient {
     }
 
     /**
-     * Retrieves metadata endpoint.
-     * @see <a href="https://buildkite.com/docs/apis/rest-api/meta#get-meta-information">https://buildkite.com/docs/apis/rest-api/meta#get-meta-information</a>
-     *
-     * @return Details about the current User.
-     * @throws BuildkiteException if API returns an error response.
-     */
-    public MetaResponse getMeta() throws BuildkiteException {
-        return executeRequest(new GetMetaRequest());
-    }
-
-    /**
-     * List all of the Emojis defined in the given Organization.
-     * @param orgIdSlug Organization Id slug to retrieve list of emojis for.
-     * @return List of Emojis.
-     * @throws BuildkiteException if API returns an error response.
-     */
-    public List<Emoji> listEmojis(final String orgIdSlug) {
-        return executeRequest(new ListEmojisRequest(orgIdSlug));
-    }
-
-    /**
      * Retrieve all Builds accessible to the current user/API access token, across all Organizations.
      * Results will be paged.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#list-all-builds">https://buildkite.com/docs/apis/rest-api/builds#list-all-builds</a>
      *
      * @return All Builds accessible to the current user/API access token, across all Organizations. Results
      *         will be paged if the number of results exceeds 30.
@@ -286,10 +303,11 @@ public class BuildkiteClient {
     /**
      * Retrieve all builds which match the supplied search criteria.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#list-all-builds">https://buildkite.com/docs/apis/rest-api/builds#list-all-builds</a>
+     *
      * @param filtersBuilder Filter criteria.
      * @return All builds which match the supplied search criteria. Results will be paged if the number of results
      *         exceeds 30 (or the page limit specified in the search criteria).
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public ListBuildsResponse listBuilds(final BuildFiltersBuilder filtersBuilder) {
@@ -299,10 +317,11 @@ public class BuildkiteClient {
     /**
      * Retrieve all builds which match the supplied search criteria.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#list-all-builds">https://buildkite.com/docs/apis/rest-api/builds#list-all-builds</a>
+     *
      * @param filters Filter criteria.
      * @return All builds which match the supplied search criteria. Results will be paged if the number of results
      *         exceeds 30 (or the page limit specified in the search criteria).
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public ListBuildsResponse listBuilds(final BuildFilters filters) {
@@ -312,9 +331,10 @@ public class BuildkiteClient {
     /**
      * Retrieve a specific build based on the filter criteria.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#get-a-build">https://buildkite.com/docs/apis/rest-api/builds#get-a-build</a>
+     *
      * @param filters Filter criteria.
      * @return The build which matches the criteria if found.
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public Optional<Build> getBuild(final GetBuildFiltersBuilder filters) {
@@ -324,27 +344,29 @@ public class BuildkiteClient {
     /**
      * Retrieve a specific build based on the filter criteria.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#get-a-build">https://buildkite.com/docs/apis/rest-api/builds#get-a-build</a>
+     *
      * @param organizationSlugId Organization associated with the build.
      * @param pipelineSlugId Pipeline associated with the build.
      * @param buildNumber The build number.
      * @return The build which matches the criteria if found.
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public Optional<Build> getBuild(final String organizationSlugId, final String pipelineSlugId, final long buildNumber) {
         return getBuild(GetBuildFilters.newBuilder()
-            .withOrgIdSlug(organizationSlugId)
-            .withPipelineIdSlug(pipelineSlugId)
-            .withBuildNumber(buildNumber)
+                .withOrgIdSlug(organizationSlugId)
+                .withPipelineIdSlug(pipelineSlugId)
+                .withBuildNumber(buildNumber)
         );
     }
 
     /**
      * Retrieve a specific build based on the filter criteria.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#get-a-build">https://buildkite.com/docs/apis/rest-api/builds#get-a-build</a>
+     *
      * @param filters Filter criteria.
      * @return The build which matches the criteria if found.
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public Optional<Build> getBuild(final GetBuildFilters filters) {
@@ -355,11 +377,12 @@ public class BuildkiteClient {
     /**
      * Cancels the build if its state is either scheduled or running.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#cancel-a-build">https://buildkite.com/docs/apis/rest-api/builds#cancel-a-build</a>
+     *
      * @param organizationSlugId Organization associated with the build.
      * @param pipelineSlugId Pipeline associated with the build.
      * @param buildNumber The build number.
      * @return Updated Build instance.
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public Build cancelBuild(final String organizationSlugId, final String pipelineSlugId, final long buildNumber) {
@@ -369,9 +392,10 @@ public class BuildkiteClient {
     /**
      * Creates a new build to be executed.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#create-a-build">https://buildkite.com/docs/apis/rest-api/builds#create-a-build</a>
+     *
      * @param createBuildOptions Defines the build to be created.
      * @return Created Build instance.
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public Build createBuild(final CreateBuildOptionsBuilder createBuildOptions) {
@@ -381,9 +405,10 @@ public class BuildkiteClient {
     /**
      * Creates a new build to be executed.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#create-a-build">https://buildkite.com/docs/apis/rest-api/builds#create-a-build</a>
+     *
      * @param createBuildOptions Defines the build to be created.
      * @return Created Build instance.
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public Build createBuild(final CreateBuildOptions createBuildOptions) {
@@ -393,15 +418,96 @@ public class BuildkiteClient {
     /**
      * Retries a build.
      *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/builds#rebuild-a-build">https://buildkite.com/docs/apis/rest-api/builds#rebuild-a-build</a>
+     *
      * @param organizationSlugId Organization associated with the build.
      * @param pipelineSlugId Pipeline associated with the build.
      * @param buildNumber The build number.
      * @return Updated Build instance.
-     *
      * @throws BuildkiteException if API returns an error response.
      */
     public Build rebuildBuild(final String organizationSlugId, final String pipelineSlugId, final long buildNumber) {
         return executeRequest(new RebuildBuildRequest(organizationSlugId, pipelineSlugId, buildNumber));
+    }
+
+    /**
+     * Retries a failed or timed_out job. You can only retry each job.id once.
+     * To retry a "second time" use the new job.id returned in the first retry query.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/jobs#retry-a-job">https://buildkite.com/docs/apis/rest-api/jobs#retry-a-job</a>
+     *
+     * @param options Defines which Job to retry.
+     * @return Updated job instance.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Job retryJob(final RetryJobOptionsBuilder options) {
+        return retryJob(options.build());
+    }
+
+    /**
+     * Retries a failed or timed_out job. You can only retry each job.id once.
+     * To retry a "second time" use the new job.id returned in the first retry query.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/jobs#retry-a-job">https://buildkite.com/docs/apis/rest-api/jobs#retry-a-job</a>
+     *
+     * @param options Defines which Job to retry.
+     * @return Updated job instance.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Job retryJob(final RetryJobOptions options) {
+        return executeRequest(new RetryJobRequest(options));
+    }
+
+    /**
+     * Unblocks a build's "Block pipeline" job. The job's unblockable property indicates whether it is able to be unblocked,
+     * and the unblock_url property points to this endpoint.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/jobs#unblock-a-job">https://buildkite.com/docs/apis/rest-api/jobs#unblock-a-job</a>
+     *
+     * @param options Defines which Job to unblock.
+     * @return Updated job instance.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Job unblockJob(final UnblockJobOptionsBuilder options) {
+        return unblockJob(options.build());
+    }
+
+    /**
+     * Unblocks a build's "Block pipeline" job. The job's unblockable property indicates whether it is able to be unblocked,
+     * and the unblock_url property points to this endpoint.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/jobs#unblock-a-job">https://buildkite.com/docs/apis/rest-api/jobs#unblock-a-job</a>
+     *
+     * @param options Defines which Job to unblock.
+     * @return Updated job instance.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public Job unblockJob(final UnblockJobOptions options) {
+        return executeRequest(new UnblockJobRequest(options));
+    }
+
+    /**
+     * List all Emojis defined in the given Organization.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/emojis#list-emojis">https://buildkite.com/docs/apis/rest-api/emojis#list-emojis</a>
+     *
+     * @param orgIdSlug Organization Id slug to retrieve list of emojis for.
+     * @return List of Emojis.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public List<Emoji> listEmojis(final String orgIdSlug) {
+        return executeRequest(new ListEmojisRequest(orgIdSlug));
+    }
+
+    /**
+     * Retrieves metadata endpoint.
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/meta#get-meta-information">https://buildkite.com/docs/apis/rest-api/meta#get-meta-information</a>
+     *
+     * @return Details about the current User.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public MetaResponse getMeta() throws BuildkiteException {
+        return executeRequest(new GetMetaRequest());
     }
 
     /**
@@ -550,6 +656,9 @@ public class BuildkiteClient {
      */
     public <T> T executeRequest(final Request<T> request) throws BuildkiteException {
         final HttpResult result = httpClient.executeRequest(request);
+
+        // Debug logging of the result.
+        logger.trace("HttpResult: {}", result);
 
         // Handle Errors based on HttpCode.
         if (result.getStatus() != 200 && result.getStatus() != 201 && result.getStatus() != 204) {

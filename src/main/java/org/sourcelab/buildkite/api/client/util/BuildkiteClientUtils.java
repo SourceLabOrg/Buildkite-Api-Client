@@ -28,7 +28,6 @@ import org.sourcelab.buildkite.api.client.request.PageOptions;
 import org.sourcelab.buildkite.api.client.request.PageableRequest;
 import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.request.Request;
-import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
 import org.sourcelab.buildkite.api.client.response.ListPipelinesResponse;
@@ -46,7 +45,10 @@ public class BuildkiteClientUtils {
 
     /**
      * Helper method to retrieve all entries given a filter criteria.
-     * The results will be ordered from NEWEST to OLDEST.
+     * The results will be ordered from OLDEST to NEWEST.
+     *
+     * NOTE: This may result in executing a LARGE number of requests depending
+     * on how many entries exist.
      *
      * @param <REQUEST> The request class.
      * @param <OBJECT> The object within the Response to return.
@@ -57,10 +59,10 @@ public class BuildkiteClientUtils {
      * @return List of Builds sorted from NEWEST to OLDEST.
      */
     public static <REQUEST, OBJECT> List<OBJECT> retrieveAll(
-            final Filters filters,
-            final Class<REQUEST> requestClass,
-            final Class<OBJECT> objectClass,
-            final BuildkiteClient client
+        final Filters filters,
+        final Class<REQUEST> requestClass,
+        final Class<OBJECT> objectClass,
+        final BuildkiteClient client
     ) {
         final PageableRequest<REQUEST> request;
         if (filters instanceof BuildFilters) {

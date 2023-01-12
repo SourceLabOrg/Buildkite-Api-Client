@@ -39,10 +39,6 @@ public class ListPipelinesRequest extends GetRequest<ListPipelinesResponse> impl
 
     @Override
     public String getPath() {
-        // TODO need to urlencode these?
-        if (filters.hasPipelineIdSlug()) {
-            return "/v2/organizations/" + filters.getOrgIdSlug() + "/pipelines/" + filters.getPipelineIdSlug();
-        }
         return "/v2/organizations/" + filters.getOrgIdSlug() + "/pipelines";
     }
 

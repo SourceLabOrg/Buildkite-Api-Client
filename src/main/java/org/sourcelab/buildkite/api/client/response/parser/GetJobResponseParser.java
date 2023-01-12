@@ -19,11 +19,12 @@ package org.sourcelab.buildkite.api.client.response.parser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.response.Organization;
+import org.sourcelab.buildkite.api.client.response.Build;
+import org.sourcelab.buildkite.api.client.response.Job;
 
-public class GetOrganizationResponseParser implements ResponseParser<Organization> {
+public class GetJobResponseParser implements ResponseParser<Job> {
     @Override
-    public Organization parseResponse(final HttpResult result) throws JsonProcessingException {
-        return JacksonFactory.newInstance().readValue(result.getContent(), Organization.class);
+    public Job parseResponse(final HttpResult result) throws JsonProcessingException {
+        return JacksonFactory.newInstance().readValue(result.getContent(), Job.class);
     }
 }

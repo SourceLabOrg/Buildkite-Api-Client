@@ -18,49 +18,55 @@
 package org.sourcelab.buildkite.api.client.request;
 
 /**
- * Optional Properties to filter Organizations.
+ * Options for Retrying a Job.
  */
-public class PipelineFilters implements Filters {
-    private final PageOptions pageOptions;
-    private final String orgIdSlug;
+public class RetryJobOptions {
+    private final String organizationSlug;
+    private final String pipelineSlug;
+    private final long buildNumber;
+    private final String jobId;
 
     /**
-     * Builder for {@link PipelineFilters}.
-     * @return Builder for {@link PipelineFilters}.
+     * Builder instance for {@link RetryJobOptions}.
+     * @return Builder instance for {@link RetryJobOptions}.
      */
-    public static PipelineFiltersBuilder newBuilder() {
-        return new PipelineFiltersBuilder();
+    public static RetryJobOptionsBuilder newBuilder() {
+        return new RetryJobOptionsBuilder();
     }
 
     /**
      * Constructor.
-     * Use {@link BuildFiltersBuilder} to create instances.
      */
-    public PipelineFilters(
-        final PageOptions pageOptions,
-        final String orgIdSlug
-    ) {
-        this.pageOptions = pageOptions == null ? PageOptions.getDefault() : pageOptions;
-        this.orgIdSlug = orgIdSlug;
+    public RetryJobOptions(final String organizationSlug, final String pipelineIdSlug, final long buildNumber, final String jobId) {
+        this.organizationSlug = organizationSlug;
+        this.pipelineSlug = pipelineIdSlug;
+        this.buildNumber = buildNumber;
+        this.jobId = jobId;
     }
 
-    public String getOrgIdSlug() {
-        return orgIdSlug;
+    public String getOrganizationSlug() {
+        return organizationSlug;
     }
 
-    public boolean hasOrgIdSlug() {
-        return orgIdSlug != null;
+    public String getPipelineSlug() {
+        return pipelineSlug;
     }
 
-    public PageOptions getPageOptions() {
-        return pageOptions;
+    public long getBuildNumber() {
+        return buildNumber;
+    }
+
+    public String getJobId() {
+        return jobId;
     }
 
     @Override
     public String toString() {
-        return "PipelineFilters{"
-                + "pageOptions=" + pageOptions
-                + ", orgIdSlug='" + orgIdSlug + '\''
-                + '}';
+        return "RetryJobOptions{"
+            + "orgIdSlug='" + organizationSlug + '\''
+            + ", pipelineIdSlug='" + pipelineSlug + '\''
+            + ", buildNumber=" + buildNumber
+            + ", jobId='" + jobId + '\''
+            + '}';
     }
 }

@@ -19,15 +19,23 @@ package org.sourcelab.buildkite.api.client.http;
 
 import org.sourcelab.buildkite.api.client.request.Request;
 
+import java.io.Closeable;
+
 /**
  * Abstraction around underlying Http Client library.  Allows for replacing the
  * underlying library in the future if needed.
  */
-public interface Client {
+public interface Client extends Closeable {
     /**
      * Execute the supplied request and return the server's response.
      * @param request The request to execute.
-     * @return The servers response.
+     * @return The API response.
      */
-    HttpResult executeRequest(final Request request);
+    HttpResult executeRequest(final Request<?> request);
+
+    /**
+     * Close the Client implementation and release any resources it
+     * may have open.
+     */
+    void close();
 }

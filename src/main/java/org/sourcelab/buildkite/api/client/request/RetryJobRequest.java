@@ -15,15 +15,35 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.sourcelab.buildkite.api.client.response.parser;
+package org.sourcelab.buildkite.api.client.request;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.response.Organization;
+import org.sourcelab.buildkite.api.client.response.Job;
+import org.sourcelab.buildkite.api.client.response.parser.GetJobResponseParser;
+import org.sourcelab.buildkite.api.client.response.parser.ResponseParser;
 
-public class GetOrganizationResponseParser implements ResponseParser<Organization> {
+import java.util.Objects;
+
+public class RetryJobRequest extends PutRequest<Job> {
+    private final RetryJobOptions options;
+
+    /**
+     * Constructor.
+     */
+    public RetryJobRequest(final RetryJobOptions options) {
+        this.options = Objects.requireNonNull(options);
+    }
+
     @Override
-    public Organization parseResponse(final HttpResult result) throws JsonProcessingException {
-        return JacksonFactory.newInstance().readValue(result.getContent(), Organization.class);
+    public String getPath() {
+        return "/v2/organizations/" + options.getOrganizationSlug()
+            + "/pipelines/" + options.getPipelineSlug()
+            + "/builds/" + options.getBuildNumber()
+            + "/jobs/" + options.getJobId() + "/retry";
+
+    }
+
+    @Override
+    public ResponseParser<Job> getResponseParser() {
+        return new GetJobResponseParser();
     }
 }
