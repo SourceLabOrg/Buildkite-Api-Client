@@ -20,54 +20,43 @@ package org.sourcelab.buildkite.api.client.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-public class Provider {
+public class RebuiltFrom {
     private final String id;
-    private final String webhookUrl;
-    private final Map<String, String> settings;
+    private final long number;
+    private final String url;
 
     /**
      * Constructor.
-     * @param id Id property.
-     * @param webhookUrl Webhook Url property.
      */
     @JsonCreator
-    public Provider(
+    public RebuiltFrom(
         @JsonProperty("id") final String id,
-        @JsonProperty("webhook_url") final String webhookUrl,
-        @JsonProperty("settings") final Map<String, String> settings
+        @JsonProperty("number") final long number,
+        @JsonProperty("url") final String url
     ) {
         this.id = id;
-        this.webhookUrl = webhookUrl;
-
-        final Map<String, String> settingsMap = new HashMap<>();
-        if (settings != null) {
-            settingsMap.putAll(settings);
-        }
-        this.settings = Collections.unmodifiableMap(settingsMap);
+        this.number = number;
+        this.url = url;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getWebhookUrl() {
-        return webhookUrl;
+    public long getNumber() {
+        return number;
     }
 
-    public Map<String, String> getSettings() {
-        return settings;
+    public String getUrl() {
+        return url;
     }
 
     @Override
     public String toString() {
-        return "Provider{"
+        return "RebuiltFrom{"
             + "id='" + id + '\''
-            + ", webhookUrl='" + webhookUrl + '\''
-            + ", settings=" + settings
+            + ", number=" + number
+            + ", url='" + url + '\''
             + '}';
     }
 }

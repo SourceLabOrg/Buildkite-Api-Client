@@ -46,6 +46,7 @@ public class Build {
     private final Creator creator;
     private final Pipeline pipeline;
     private final List<Job> jobs;
+    private final RebuiltFrom rebuiltFrom;
 
     /**
      * Constructor.
@@ -70,7 +71,8 @@ public class Build {
         @JsonProperty("author") final Author author,
         @JsonProperty("creator") final Creator creator,
         @JsonProperty("pipeline") final Pipeline pipeline,
-        @JsonProperty("jobs") final List<Job> jobs
+        @JsonProperty("jobs") final List<Job> jobs,
+        @JsonProperty("rebuilt_from") final RebuiltFrom rebuiltFrom
     ) {
         this.id = id;
         this.graphqlId = graphqlId;
@@ -91,6 +93,7 @@ public class Build {
         this.creator = creator;
         this.pipeline = pipeline;
         this.jobs = jobs;
+        this.rebuiltFrom = rebuiltFrom;
     }
 
     public String getId() {
@@ -169,6 +172,10 @@ public class Build {
         return jobs;
     }
 
+    public RebuiltFrom getRebuiltFrom() {
+        return rebuiltFrom;
+    }
+
     @Override
     public String toString() {
         return "Build{"
@@ -191,6 +198,7 @@ public class Build {
             + ", creator=" + creator
             + ", pipeline=" + pipeline
             + ", jobs=" + jobs
+            + ", rebuiltFrom=" + rebuiltFrom
             + '}';
     }
 

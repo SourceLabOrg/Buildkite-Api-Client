@@ -337,6 +337,10 @@ public class BuildkiteClientTest {
         assertEquals("Run Tests", build.getPipeline().getName());
         assertNotNull(build.getPipeline().getProvider());
         assertEquals("github", build.getPipeline().getProvider().getId());
+        assertNotNull(build.getRebuiltFrom());
+        assertEquals("build-id", build.getRebuiltFrom().getId());
+        assertEquals(46, build.getRebuiltFrom().getNumber());
+        assertEquals("https://api.buildkite.com/v2/organizations/orgSlug/pipelines/pipelineSlug/builds/46", build.getRebuiltFrom().getUrl());
 
         build = response.getBuilds().get(1);
         assertEquals("01858542", build.getId());
@@ -355,6 +359,7 @@ public class BuildkiteClientTest {
         assertEquals("Run Tests", build.getPipeline().getName());
         assertNotNull(build.getPipeline().getProvider());
         assertEquals("github", build.getPipeline().getProvider().getId());
+        assertNull(build.getRebuiltFrom());
     }
 
     /**
@@ -580,8 +585,35 @@ public class BuildkiteClientTest {
         pipeline = response.getPipelines().get(1);
         assertEquals("pipeline-id-2", pipeline.getId());
         assertEquals("pipeline-name-2", pipeline.getName());
+
+        // Spot check provider
         assertNotNull(pipeline.getProvider());
         assertEquals("github", pipeline.getProvider().getId());
+        assertEquals("https://webhook.buildkite.com/deliver/webook-hash2", pipeline.getProvider().getWebhookUrl());
+        assertNotNull(pipeline.getProvider().getSettings());
+        assertEquals(20, pipeline.getProvider().getSettings().size());
+        assertEquals("true", pipeline.getProvider().getSettings().get("build_pull_requests"));
+        assertEquals("code", pipeline.getProvider().getSettings().get("trigger_mode"));
+
+        // Spot Check Steps
+        assertNotNull(pipeline.getSteps());
+        assertEquals(4, pipeline.getSteps().size());
+        assertEquals("script", pipeline.getSteps().get(0).getType());
+        assertEquals("Compile & Verify", pipeline.getSteps().get(0).getName());
+        assertEquals("mvn clean compile", pipeline.getSteps().get(0).getCommand());
+
+        assertEquals("script", pipeline.getSteps().get(1).getType());
+        assertEquals("Run tests", pipeline.getSteps().get(1).getName());
+        assertEquals("mvn test", pipeline.getSteps().get(1).getCommand());
+
+        assertEquals("waiter", pipeline.getSteps().get(2).getType());
+        assertEquals(null, pipeline.getSteps().get(2).getName());
+        assertEquals(null, pipeline.getSteps().get(2).getCommand());
+
+        assertEquals("script", pipeline.getSteps().get(3).getType());
+        assertEquals("Annotate", pipeline.getSteps().get(3).getName());
+        assertEquals(null, pipeline.getSteps().get(3).getCommand());
+        assertFalse(pipeline.getSteps().get(3).getEnv().isEmpty());
     }
 
     /**

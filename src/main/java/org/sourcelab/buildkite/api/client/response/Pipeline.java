@@ -20,6 +20,9 @@ package org.sourcelab.buildkite.api.client.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Pipeline {
     // TODO Fields
@@ -51,31 +54,33 @@ public class Pipeline {
     private final long waitingJobsCount;
 
     private final Provider provider;
+    private final List<Step> steps;
 
     /**
      * Constructor.
      */
     public Pipeline(
-            @JsonProperty("id") final String id,
-            @JsonProperty("graphql_id") final String graphqlId,
-            @JsonProperty("url") final String url,
-            @JsonProperty("name") final String name,
-            @JsonProperty("description") final String description,
-            @JsonProperty("slug") final String slug,
-            @JsonProperty("repository") final String repository,
-            @JsonProperty("cluster_id") final String clusterId,
-            @JsonProperty("skip_queued_branch_builds") final Boolean skipQueuedBranchBuilds,
-            @JsonProperty("cancel_running_branch_builds") final Boolean cancelRunningBranchBuilds,
-            @JsonProperty("allow_rebuilds") final Boolean allowRebuilds,
-            @JsonProperty("builds_url") final String buildsUrl,
-            @JsonProperty("badge_url") final String badgeUrl,
-            @JsonProperty("created_at") final ZonedDateTime createdAt,
-            @JsonProperty("scheduled_builds_count") final Long scheduledBuildsCount,
-            @JsonProperty("running_builds_count") final Long runningBuildsCount,
-            @JsonProperty("scheduled_jobs_count") final Long scheduledJobsCount,
-            @JsonProperty("running_jobs_count") final Long runningJobsCount,
-            @JsonProperty("waiting_jobs_count") final Long waitingJobsCount,
-            @JsonProperty("provider") final Provider provider
+        @JsonProperty("id") final String id,
+        @JsonProperty("graphql_id") final String graphqlId,
+        @JsonProperty("url") final String url,
+        @JsonProperty("name") final String name,
+        @JsonProperty("description") final String description,
+        @JsonProperty("slug") final String slug,
+        @JsonProperty("repository") final String repository,
+        @JsonProperty("cluster_id") final String clusterId,
+        @JsonProperty("skip_queued_branch_builds") final Boolean skipQueuedBranchBuilds,
+        @JsonProperty("cancel_running_branch_builds") final Boolean cancelRunningBranchBuilds,
+        @JsonProperty("allow_rebuilds") final Boolean allowRebuilds,
+        @JsonProperty("builds_url") final String buildsUrl,
+        @JsonProperty("badge_url") final String badgeUrl,
+        @JsonProperty("created_at") final ZonedDateTime createdAt,
+        @JsonProperty("scheduled_builds_count") final Long scheduledBuildsCount,
+        @JsonProperty("running_builds_count") final Long runningBuildsCount,
+        @JsonProperty("scheduled_jobs_count") final Long scheduledJobsCount,
+        @JsonProperty("running_jobs_count") final Long runningJobsCount,
+        @JsonProperty("waiting_jobs_count") final Long waitingJobsCount,
+        @JsonProperty("provider") final Provider provider,
+        @JsonProperty("steps") final List<Step> steps
     ) {
         this.id = id;
         this.graphqlId = graphqlId;
@@ -97,6 +102,12 @@ public class Pipeline {
         this.runningJobsCount = runningJobsCount == null ? 0 : runningJobsCount;
         this.waitingJobsCount = waitingJobsCount == null ? 0 : waitingJobsCount;
         this.provider = provider;
+
+        final List<Step> stepList = new ArrayList<>();
+        if (steps != null) {
+            stepList.addAll(steps);
+        }
+        this.steps = Collections.unmodifiableList(stepList);
     }
 
     public String getId() {
@@ -179,6 +190,10 @@ public class Pipeline {
         return allowRebuilds;
     }
 
+    public List<Step> getSteps() {
+        return steps;
+    }
+
     @Override
     public String toString() {
         return "Pipeline{"
@@ -202,6 +217,7 @@ public class Pipeline {
             + ", runningJobsCount=" + runningJobsCount
             + ", waitingJobsCount=" + waitingJobsCount
             + ", provider=" + provider
+            + ", steps=" + steps
             + '}';
     }
 }

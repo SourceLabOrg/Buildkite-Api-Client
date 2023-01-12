@@ -32,7 +32,11 @@
   "finished_at": null,
   "meta_data": {},
   "pull_request": null,
-  "rebuilt_from": null,
+  "rebuilt_from": {
+    "id": "build-id",
+    "number": 46,
+    "url": "https://api.buildkite.com/v2/organizations/orgSlug/pipelines/pipelineSlug/builds/46"
+  },
   "pipeline": {
     "id": "pipeline-id",
     "graphql_id": "pipeline-graphql-id",
