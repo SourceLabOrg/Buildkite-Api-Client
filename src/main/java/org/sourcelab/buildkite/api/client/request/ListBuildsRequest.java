@@ -91,13 +91,14 @@ public class ListBuildsRequest extends GetRequest<ListBuildsResponse> implements
 
         // Date Filters
         if (filters.getCreatedFrom() != null) {
-            builder.withParameter("created_from", filters.getCreatedFrom().format(DateTimeFormatter.ISO_DATE));
+            //2023-01-12T05:48:28Z
+            builder.withParameter("created_from", filters.getCreatedFrom().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         }
         if (filters.getCreatedTo() != null) {
-            builder.withParameter("created_to", filters.getCreatedTo().format(DateTimeFormatter.ISO_DATE));
+            builder.withParameter("created_to", filters.getCreatedTo().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         }
         if (filters.getFinishedFrom() != null) {
-            builder.withParameter("finished_from", filters.getFinishedFrom().format(DateTimeFormatter.ISO_DATE));
+            builder.withParameter("finished_from", filters.getFinishedFrom().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         }
         return builder.build();
     }

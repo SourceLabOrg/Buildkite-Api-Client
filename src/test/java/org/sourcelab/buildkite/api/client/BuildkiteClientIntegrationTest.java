@@ -41,6 +41,7 @@ import org.sourcelab.buildkite.api.client.response.PingResponse;
 import org.sourcelab.buildkite.api.client.response.Pipeline;
 import org.sourcelab.buildkite.api.client.util.BuildkiteClientUtils;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -162,9 +163,9 @@ class BuildkiteClientIntegrationTest {
     @Test
     void listBuilds() {
         final BuildFilters filters = BuildFilters.newBuilder()
-                .withPageOptions(1, 2)
-                .withStateChooser().failed()
-                .build();
+            .withPageOptions(1, 2)
+            .withStateChooser().failed()
+            .build();
         final ListBuildsResponse result = client.listBuilds(filters);
         logger.info("Result: {}", result);
 
@@ -178,6 +179,20 @@ class BuildkiteClientIntegrationTest {
         logger.info("Result: {}", result);
 
         assertNotNull(resultPage2, "Page 2 result should be not null.");
+    }
+
+    /**
+     * Sanity test the 'listBuilds' request.
+     */
+    @Test
+    void listBuilds_withDateTimeCriteria() {
+        final BuildFilters filters = BuildFilters.newBuilder()
+            .withPageOptions(1, 2)
+            .withCreatedFrom(ZonedDateTime.now().minusDays(1))
+            .withStateChooser().failed()
+            .build();
+        final ListBuildsResponse result = client.listBuilds(filters);
+        logger.info("Result: {}", result);
     }
 
     /**
