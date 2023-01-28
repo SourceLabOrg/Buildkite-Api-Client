@@ -122,7 +122,7 @@ public class BuildkiteClientUtils {
      * @return Results from retrying multiple jobs.
      * @throws BuildkiteException on errors.
      */
-    public static MultipleRetriedJobsResults retryJobs(
+    public static MultipleRetriedJobsResults retryMultipleJobs(
         final RetryMultipleJobsOptions options,
         final BuildkiteClient client
     ) {
