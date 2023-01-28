@@ -27,7 +27,7 @@ public final class RetryMultipleJobsOptionsBuilder {
     private String organizationSlug = null;
     private String pipelineSlug = null;
     private Long buildNumber = null;
-    private Set<String> jobIds = new HashSet<>(;
+    private Set<String> jobIds = new HashSet<>();
 
     public RetryMultipleJobsOptionsBuilder() {
     }
