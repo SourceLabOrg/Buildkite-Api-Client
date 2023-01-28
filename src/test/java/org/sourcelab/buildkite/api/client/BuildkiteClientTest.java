@@ -335,12 +335,19 @@ public class BuildkiteClientTest {
         assertNotNull(build.getPipeline());
         assertEquals("pipeline-id", build.getPipeline().getId());
         assertEquals("Run Tests", build.getPipeline().getName());
+        assertEquals("https://buildkite.com/org-slug-here/run-tests", build.getPipeline().getWebUrl());
         assertNotNull(build.getPipeline().getProvider());
         assertEquals("github", build.getPipeline().getProvider().getId());
         assertNotNull(build.getRebuiltFrom());
         assertEquals("build-id", build.getRebuiltFrom().getId());
         assertEquals(46, build.getRebuiltFrom().getNumber());
         assertEquals("https://api.buildkite.com/v2/organizations/orgSlug/pipelines/pipelineSlug/builds/46", build.getRebuiltFrom().getUrl());
+
+        // First build should have a pull request
+        assertNotNull(build.getPullRequest(), "Pull request should be not null");
+        assertEquals("1245", build.getPullRequest().getId());
+        assertEquals("main", build.getPullRequest().getBase());
+        assertEquals("git@github.com:org-slug-here/Project.git", build.getPullRequest().getRepository());
 
         build = response.getBuilds().get(1);
         assertEquals("01858542", build.getId());
@@ -357,6 +364,7 @@ public class BuildkiteClientTest {
         assertNotNull(build.getPipeline());
         assertEquals("PipelineIdHere", build.getPipeline().getId());
         assertEquals("Run Tests", build.getPipeline().getName());
+        assertEquals("https://buildkite.com/org-slug-here/run-tests", build.getPipeline().getWebUrl());
         assertNotNull(build.getPipeline().getProvider());
         assertEquals("github", build.getPipeline().getProvider().getId());
         assertNull(build.getRebuiltFrom());

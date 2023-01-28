@@ -51,6 +51,10 @@ public class Job {
     private final long retriesCount;
     private final String retryType;
 
+    // Parallel Builds
+    private final Integer parallelGroupIndex;
+    private final Integer parallelGroupTotal;
+
     // TODO
     // "agent_query_rules": ["*"],
 
@@ -81,7 +85,9 @@ public class Job {
         @JsonProperty("retried") final Boolean retried,
         @JsonProperty("retriedInJobId") final String retriedInJobId,
         @JsonProperty("retriesCount") final Long retriesCount,
-        @JsonProperty("retryType") final String retryType
+        @JsonProperty("retryType") final String retryType,
+        @JsonProperty("parallel_group_index") final Integer parallelGroupIndex,
+        @JsonProperty("parallel_group_total") final Integer parallelGroupTotal
     ) {
         this.id = id;
         this.graphqlId = graphqlId;
@@ -106,6 +112,8 @@ public class Job {
         this.retriedInJobId = retriedInJobId;
         this.retriesCount = retriesCount == null ? 0 : retriesCount;
         this.retryType = retryType;
+        this.parallelGroupIndex = parallelGroupIndex;
+        this.parallelGroupTotal = parallelGroupTotal;
     }
 
     public String getId() {
@@ -200,32 +208,42 @@ public class Job {
         return retryType;
     }
 
+    public Integer getParallelGroupIndex() {
+        return parallelGroupIndex;
+    }
+
+    public Integer getParallelGroupTotal() {
+        return parallelGroupTotal;
+    }
+
     @Override
     public String toString() {
         return "Job{"
-            + "id='" + id + '\''
-            + ", graphqlId='" + graphqlId + '\''
-            + ", type='" + type + '\''
-            + ", name='" + name + '\''
-            + ", stepKey='" + stepKey + '\''
-            + ", state='" + state + '\''
-            + ", webUrl='" + webUrl + '\''
-            + ", logUrl='" + logUrl + '\''
-            + ", rawLogUrl='" + rawLogUrl + '\''
-            + ", command='" + command + '\''
-            + ", softFailed=" + softFailed
-            + ", exitStatus=" + exitStatus
-            + ", artifactPaths='" + artifactPaths + '\''
-            + ", agent=" + agent
-            + ", createdAt=" + createdAt
-            + ", scheduledAt=" + scheduledAt
-            + ", runnableAt=" + runnableAt
-            + ", startedAt=" + startedAt
-            + ", finishedAt=" + finishedAt
-            + ", retried=" + retried
-            + ", retriedInJobId='" + retriedInJobId + '\''
-            + ", retriesCount=" + retriesCount
-            + ", retryType='" + retryType + '\''
-            + '}';
+            + "\n\tid='" + id + '\''
+            + "\n\tgraphqlId='" + graphqlId + '\''
+            + "\n\ttype='" + type + '\''
+            + "\n\tname='" + name + '\''
+            + "\n\tstepKey='" + stepKey + '\''
+            + "\n\tstate='" + state + '\''
+            + "\n\twebUrl='" + webUrl + '\''
+            + "\n\tlogUrl='" + logUrl + '\''
+            + "\n\trawLogUrl='" + rawLogUrl + '\''
+            + "\n\tcommand='" + command + '\''
+            + "\n\tsoftFailed=" + softFailed
+            + "\n\texitStatus=" + exitStatus
+            + "\n\tartifactPaths='" + artifactPaths + '\''
+            + "\n\tagent=" + agent
+            + "\n\tcreatedAt=" + createdAt
+            + "\n\tscheduledAt=" + scheduledAt
+            + "\n\trunnableAt=" + runnableAt
+            + "\n\tstartedAt=" + startedAt
+            + "\n\tfinishedAt=" + finishedAt
+            + "\n\tretried=" + retried
+            + "\n\tretriedInJobId='" + retriedInJobId + '\''
+            + "\n\tretriesCount=" + retriesCount
+            + "\n\tretryType='" + retryType + '\''
+            + "\n\tparallelGroupIndex=" + parallelGroupIndex
+            + "\n\tparallelGroupTotal=" + parallelGroupTotal
+            + "\n}";
     }
 }

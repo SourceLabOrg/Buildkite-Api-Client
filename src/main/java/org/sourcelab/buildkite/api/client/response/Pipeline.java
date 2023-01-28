@@ -31,6 +31,7 @@ public class Pipeline {
 
     private final String id;
     private final String graphqlId;
+    private final String webUrl;
     private final String url;
     private final String name;
     private final String description;
@@ -62,6 +63,7 @@ public class Pipeline {
     public Pipeline(
         @JsonProperty("id") final String id,
         @JsonProperty("graphql_id") final String graphqlId,
+        @JsonProperty("web_url") final String webUrl,
         @JsonProperty("url") final String url,
         @JsonProperty("name") final String name,
         @JsonProperty("description") final String description,
@@ -84,6 +86,7 @@ public class Pipeline {
     ) {
         this.id = id;
         this.graphqlId = graphqlId;
+        this.webUrl = webUrl;
         this.url = url;
         this.name = name;
         this.description = description;
@@ -116,6 +119,10 @@ public class Pipeline {
 
     public String getGraphqlId() {
         return graphqlId;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
     }
 
     public String getUrl() {
@@ -197,27 +204,28 @@ public class Pipeline {
     @Override
     public String toString() {
         return "Pipeline{"
-            + "id='" + id + '\''
-            + ", graphqlId='" + graphqlId + '\''
-            + ", url='" + url + '\''
-            + ", name='" + name + '\''
-            + ", description='" + description + '\''
-            + ", slug='" + slug + '\''
-            + ", repository='" + repository + '\''
-            + ", clusterId='" + clusterId + '\''
-            + ", skipQueuedBranchBuilds=" + skipQueuedBranchBuilds
-            + ", cancelRunningBranchBuilds=" + cancelRunningBranchBuilds
-            + ", allowRebuilds=" + allowRebuilds
-            + ", buildsUrl='" + buildsUrl + '\''
-            + ", badgeUrl='" + badgeUrl + '\''
-            + ", createdAt=" + createdAt
-            + ", scheduledBuildsCount=" + scheduledBuildsCount
-            + ", runningBuildsCount=" + runningBuildsCount
-            + ", scheduledJobsCount=" + scheduledJobsCount
-            + ", runningJobsCount=" + runningJobsCount
-            + ", waitingJobsCount=" + waitingJobsCount
-            + ", provider=" + provider
-            + ", steps=" + steps
-            + '}';
+            + "\n\tid='" + id + '\''
+            + "\n\tgraphqlId='" + graphqlId + '\''
+            + "\n\twebUrl='" + webUrl + '\''
+            + "\n\turl='" + url + '\''
+            + "\n\tname='" + name + '\''
+            + "\n\tdescription='" + description + '\''
+            + "\n\tslug='" + slug + '\''
+            + "\n\trepository='" + repository + '\''
+            + "\n\tclusterId='" + clusterId + '\''
+            + "\n\tskipQueuedBranchBuilds=" + skipQueuedBranchBuilds
+            + "\n\tcancelRunningBranchBuilds=" + cancelRunningBranchBuilds
+            + "\n\tallowRebuilds=" + allowRebuilds
+            + "\n\tbuildsUrl='" + buildsUrl + '\''
+            + "\n\tbadgeUrl='" + badgeUrl + '\''
+            + "\n\tcreatedAt=" + createdAt
+            + "\n\tscheduledBuildsCount=" + scheduledBuildsCount
+            + "\n\trunningBuildsCount=" + runningBuildsCount
+            + "\n\tscheduledJobsCount=" + scheduledJobsCount
+            + "\n\trunningJobsCount=" + runningJobsCount
+            + "\n\twaitingJobsCount=" + waitingJobsCount
+            + "\n\tprovider=" + provider
+            + "\n\tsteps=" + steps
+            + "\n}";
     }
 }

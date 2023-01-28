@@ -18,6 +18,11 @@
     "name": "First Last",
     "email": "first.last@email.com"
   },
+  "pull_request": {
+    "id": "1245",
+    "base": "main",
+    "repository": "git@github.com:org-slug-here/Project.git"
+  },
   "creator": {
     "id": "creatorId1",
     "graphql_id": "creatorIdGraphqlId",
@@ -31,7 +36,6 @@
   "started_at": null,
   "finished_at": null,
   "meta_data": {},
-  "pull_request": null,
   "rebuilt_from": {
     "id": "build-id",
     "number": 46,

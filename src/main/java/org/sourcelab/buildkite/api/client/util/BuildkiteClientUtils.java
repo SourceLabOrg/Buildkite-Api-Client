@@ -18,6 +18,7 @@
 package org.sourcelab.buildkite.api.client.util;
 
 import org.sourcelab.buildkite.api.client.BuildkiteClient;
+import org.sourcelab.buildkite.api.client.exception.BuildkiteException;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.Filters;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
@@ -28,14 +29,20 @@ import org.sourcelab.buildkite.api.client.request.PageOptions;
 import org.sourcelab.buildkite.api.client.request.PageableRequest;
 import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.request.Request;
+import org.sourcelab.buildkite.api.client.request.RetryJobOptions;
+import org.sourcelab.buildkite.api.client.request.RetryMultipleJobsOptions;
+import org.sourcelab.buildkite.api.client.response.Job;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.ListOrganizationsResponse;
 import org.sourcelab.buildkite.api.client.response.ListPipelinesResponse;
+import org.sourcelab.buildkite.api.client.response.MultipleRetriedJobsResults;
 import org.sourcelab.buildkite.api.client.response.PageableResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Collection of Utilities for common access patterns that consists of multiple
@@ -57,6 +64,7 @@ public class BuildkiteClientUtils {
      * @param objectClass The object within the Response to return.
      * @param client The BuildkiteClient to execute the requests against.
      * @return List of Builds sorted from NEWEST to OLDEST.
+     * @throws BuildkiteException on errors.
      */
     public static <REQUEST, OBJECT> List<OBJECT> retrieveAll(
         final Filters filters,
@@ -104,5 +112,31 @@ public class BuildkiteClientUtils {
         // before returning.
         final List<OBJECT> reversed = new ArrayList<>(entries);
         return reversed;
+    }
+
+    /**
+     * Given multiple jobs that belong to the same pipeline, retry all of them and return a single result.
+     *
+     * @param options Defines the jobs to retry.
+     * @param client The client to execute the requests against.
+     * @return Results from retrying multiple jobs.
+     * @throws BuildkiteException on errors.
+     */
+    public static MultipleRetriedJobsResults retryJobs(
+        final RetryMultipleJobsOptions options,
+        final BuildkiteClient client
+    ) {
+        final Map<String, Job> updatedJobs = new HashMap<>();
+        options.getJobIds().forEach((jobId) -> {
+            final Job retriedJob = client.retryJob(RetryJobOptions.newBuilder()
+                .withJobId(jobId)
+                .withBuildNumber(options.getBuildNumber())
+                .withPipelineSlug(options.getPipelineSlug())
+                .withOrganizationSlug(options.getOrganizationSlug())
+                .build()
+            );
+            updatedJobs.put(jobId, retriedJob);
+        });
+        return new MultipleRetriedJobsResults(updatedJobs);
     }
 }

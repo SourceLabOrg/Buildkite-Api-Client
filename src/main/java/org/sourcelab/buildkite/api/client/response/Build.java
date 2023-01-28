@@ -47,6 +47,7 @@ public class Build {
     private final Pipeline pipeline;
     private final List<Job> jobs;
     private final RebuiltFrom rebuiltFrom;
+    private final PullRequest pullRequest;
 
     /**
      * Constructor.
@@ -72,7 +73,8 @@ public class Build {
         @JsonProperty("creator") final Creator creator,
         @JsonProperty("pipeline") final Pipeline pipeline,
         @JsonProperty("jobs") final List<Job> jobs,
-        @JsonProperty("rebuilt_from") final RebuiltFrom rebuiltFrom
+        @JsonProperty("rebuilt_from") final RebuiltFrom rebuiltFrom,
+        @JsonProperty("pull_request") final PullRequest pullRequest
     ) {
         this.id = id;
         this.graphqlId = graphqlId;
@@ -94,6 +96,7 @@ public class Build {
         this.pipeline = pipeline;
         this.jobs = jobs;
         this.rebuiltFrom = rebuiltFrom;
+        this.pullRequest = pullRequest;
     }
 
     public String getId() {
@@ -176,30 +179,35 @@ public class Build {
         return rebuiltFrom;
     }
 
+    public PullRequest getPullRequest() {
+        return pullRequest;
+    }
+
     @Override
     public String toString() {
         return "Build{"
-            + "id='" + id + '\''
-            + ", graphqlId='" + graphqlId + '\''
-            + ", url='" + url + '\''
-            + ", webUrl='" + webUrl + '\''
-            + ", number=" + number
-            + ", state='" + state + '\''
-            + ", blocked=" + blocked
-            + ", message='" + message + '\''
-            + ", commit='" + commit + '\''
-            + ", branch='" + branch + '\''
-            + ", source='" + source + '\''
-            + ", createdAt=" + createdAt
-            + ", scheduledAt=" + scheduledAt
-            + ", startedAt=" + startedAt
-            + ", finishedAt=" + finishedAt
-            + ", author=" + author
-            + ", creator=" + creator
-            + ", pipeline=" + pipeline
-            + ", jobs=" + jobs
-            + ", rebuiltFrom=" + rebuiltFrom
-            + '}';
+            + "\n\tid='" + id + '\''
+            + "\n\tgraphqlId='" + graphqlId + '\''
+            + "\n\turl='" + url + '\''
+            + "\n\twebUrl='" + webUrl + '\''
+            + "\n\tnumber=" + number
+            + "\n\tstate='" + state + '\''
+            + "\n\tblocked=" + blocked
+            + "\n\tmessage='" + message + '\''
+            + "\n\tcommit='" + commit + '\''
+            + "\n\tbranch='" + branch + '\''
+            + "\n\tsource='" + source + '\''
+            + "\n\tcreatedAt=" + createdAt
+            + "\n\tscheduledAt=" + scheduledAt
+            + "\n\tstartedAt=" + startedAt
+            + "\n\tfinishedAt=" + finishedAt
+            + "\n\tauthor=" + author
+            + "\n\tcreator=" + creator
+            + "\n\tpipeline=" + pipeline
+            + "\n\tjobs=" + jobs
+            + "\n\trebuiltFrom=" + rebuiltFrom
+            + "\n\tpullRequest=" + pullRequest
+            + "\n}";
     }
 
     // TODO
