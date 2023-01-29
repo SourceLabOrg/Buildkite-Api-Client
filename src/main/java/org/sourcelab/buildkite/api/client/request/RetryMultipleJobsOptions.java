@@ -42,7 +42,13 @@ public class RetryMultipleJobsOptions {
     /**
      * Constructor.
      */
-    public RetryMultipleJobsOptions(final String organizationSlug, final String pipelineIdSlug, final long buildNumber, final Collection<String> jobIds, final boolean throwOnError) {
+    public RetryMultipleJobsOptions(
+        final String organizationSlug,
+        final String pipelineIdSlug,
+        final long buildNumber,
+        final Collection<String> jobIds,
+        final boolean throwOnError
+    ) {
         this.organizationSlug = organizationSlug;
         this.pipelineSlug = pipelineIdSlug;
         this.buildNumber = buildNumber;
@@ -67,11 +73,13 @@ public class RetryMultipleJobsOptions {
     }
 
     /**
-     * @return If true, if any single request fails, it will not process the remaining requests and immediately
+     * If true, if any single request fails, it will not process the remaining requests and immediately
      * throw an exception.
      *
      * If false, any errors will be captured by the return result, and further requests will continue.
      *
+     * @return If true, errors will be raised as they occur.  If false, errors will be captured in the resulting
+     *         object returned.
      */
     public boolean isThrowOnError() {
         return throwOnError;

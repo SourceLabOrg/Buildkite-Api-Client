@@ -51,7 +51,10 @@ public class MultipleRetriedJobsResults {
      * @param originalJobIdsMappedToUpdatedJobs Original Job Id mapped to the updated Job.
      * @param originalJobIdsMappedToErrors Original Job Id mapped to any error that occurred during the request.
      */
-    public MultipleRetriedJobsResults(final Map<String, Job> originalJobIdsMappedToUpdatedJobs, final Map<String, BuildkiteException> originalJobIdsMappedToErrors) {
+    public MultipleRetriedJobsResults(
+        final Map<String, Job> originalJobIdsMappedToUpdatedJobs,
+        final Map<String, BuildkiteException> originalJobIdsMappedToErrors
+    ) {
         this.originalJobIdsMappedToUpdatedJobs = Collections.unmodifiableMap(new HashMap<>(originalJobIdsMappedToUpdatedJobs));
         this.originalJobIdsMappedToErrors = Collections.unmodifiableMap(new HashMap<>(originalJobIdsMappedToErrors));
     }
