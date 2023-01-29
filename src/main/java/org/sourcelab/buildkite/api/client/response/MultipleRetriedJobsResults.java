@@ -17,25 +17,43 @@
 
 package org.sourcelab.buildkite.api.client.response;
 
+import org.sourcelab.buildkite.api.client.BuildkiteClient;
+import org.sourcelab.buildkite.api.client.exception.BuildkiteException;
+import org.sourcelab.buildkite.api.client.request.RetryMultipleJobsOptions;
+import org.sourcelab.buildkite.api.client.util.BuildkiteClientUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Results set from retrying multiple jobs.
+ * {@link BuildkiteClientUtils#retryMultipleJobs(RetryMultipleJobsOptions, BuildkiteClient)}
  */
 public class MultipleRetriedJobsResults {
+    /**
+     * Maps Original Job Id => The new retried job instance.
+     */
     private final Map<String,Job> originalJobIdsMappedToUpdatedJobs;
 
     /**
-     * Constructor.
-     * @param originalJobIdsMappedToUpdatedJobs Original Job Id mapped to the updated Job.
+     * Maps Original Job Id => The new retried job instance.
      */
-    public MultipleRetriedJobsResults(final Map<String, Job> originalJobIdsMappedToUpdatedJobs) {
+    private final Map<String, BuildkiteException> originalJobIdsMappedToErrors;
+
+    /**
+     * Constructor.
+     *
+     * @param originalJobIdsMappedToUpdatedJobs Original Job Id mapped to the updated Job.
+     * @param originalJobIdsMappedToErrors Original Job Id mapped to any error that occurred during the request.
+     */
+    public MultipleRetriedJobsResults(final Map<String, Job> originalJobIdsMappedToUpdatedJobs, final Map<String, BuildkiteException> originalJobIdsMappedToErrors) {
         this.originalJobIdsMappedToUpdatedJobs = Collections.unmodifiableMap(new HashMap<>(originalJobIdsMappedToUpdatedJobs));
+        this.originalJobIdsMappedToErrors = Collections.unmodifiableMap(new HashMap<>(originalJobIdsMappedToErrors));
     }
 
     /**
@@ -43,7 +61,19 @@ public class MultipleRetriedJobsResults {
      * @return Ids of the jobs that were retried.
      */
     public Set<String> getOriginalJobIds() {
-        return originalJobIdsMappedToUpdatedJobs.keySet();
+        // Merge keys from both sets.
+        final Set<String> jobIds = new HashSet<>(originalJobIdsMappedToUpdatedJobs.keySet());
+        jobIds.addAll(originalJobIdsMappedToErrors.keySet());
+        return jobIds;
+    }
+
+    /**
+     * Check of a Retried job instance exists for the original job id.
+     * @param originalJobId Id of the job that was retried.
+     * @return true if an instance exists, false if not.
+     */
+    public boolean hasRetriedJob(final String originalJobId) {
+        return originalJobIdsMappedToUpdatedJobs.containsKey(originalJobId);
     }
 
     /**
@@ -52,8 +82,8 @@ public class MultipleRetriedJobsResults {
      * @return The new Job instance.
      */
     public Job getRetriedJobByOriginalJobId(final String originalJobId) {
-        if (!originalJobIdsMappedToUpdatedJobs.containsKey(originalJobId)) {
-            throw new IllegalArgumentException("Job Id " + originalJobId + " was not retried and has no result");
+        if (!hasRetriedJob(originalJobId)) {
+            throw new IllegalArgumentException("Job Id " + originalJobId + " was not retried and has no result.");
         }
         return originalJobIdsMappedToUpdatedJobs.get(originalJobId);
     }
@@ -67,17 +97,55 @@ public class MultipleRetriedJobsResults {
     }
 
     /**
-     * Original Job Id mapped to the new retried job instance.
-     * @return Original Job Id mapped to the new retried job instance.
+     * All of the new retried job instances.
+     * @return All of the new retried job instances.
      */
     public List<Job> getRetriedJobs() {
         return new ArrayList<>(originalJobIdsMappedToUpdatedJobs.values());
+    }
+
+    /**
+     * Check of a given Job id had an error.
+     * @param originalJobId Id of the job that was retried.
+     * @return true if an error occurred/exists, false if not.
+     */
+    public boolean didJobHaveError(final String originalJobId) {
+        return originalJobIdsMappedToErrors.containsKey(originalJobId);
+    }
+
+    /**
+     * Get the error associated with the original job id.
+     * @param originalJobId Id of the job that was retried.
+     * @return The error that occurred.
+     */
+    public BuildkiteException getErrorByOriginalJobId(final String originalJobId) {
+        if (!didJobHaveError(originalJobId)) {
+            throw new IllegalArgumentException("Job Id " + originalJobId + " did not have an error.");
+        }
+        return originalJobIdsMappedToErrors.get(originalJobId);
+    }
+
+    /**
+     * Original Job Id mapped to the error associated with it.
+     * @return Original Job Id mapped to the error associated with it.
+     */
+    public Map<String, BuildkiteException> getOriginalJobIdsMappedToErrors() {
+        return originalJobIdsMappedToErrors;
+    }
+
+    /**
+     * All the errors.
+     * @return All the errors.
+     */
+    public List<BuildkiteException> getErrors() {
+        return new ArrayList<>(originalJobIdsMappedToErrors.values());
     }
 
     @Override
     public String toString() {
         return "MultipleRetriedJobsResults{"
             + "\n\toriginalJobIdsMappedToUpdatedJobs=" + originalJobIdsMappedToUpdatedJobs
+            + "\n\toriginalJobIdsMappedToErrors=" + originalJobIdsMappedToErrors
             + "\n}";
     }
 }

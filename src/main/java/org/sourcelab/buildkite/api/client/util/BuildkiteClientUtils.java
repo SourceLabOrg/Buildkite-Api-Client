@@ -127,16 +127,25 @@ public class BuildkiteClientUtils {
         final BuildkiteClient client
     ) {
         final Map<String, Job> updatedJobs = new HashMap<>();
+        final Map<String, BuildkiteException> errors = new HashMap<>();
+
         options.getJobIds().forEach((jobId) -> {
-            final Job retriedJob = client.retryJob(RetryJobOptions.newBuilder()
-                .withJobId(jobId)
-                .withBuildNumber(options.getBuildNumber())
-                .withPipelineSlug(options.getPipelineSlug())
-                .withOrganizationSlug(options.getOrganizationSlug())
-                .build()
-            );
-            updatedJobs.put(jobId, retriedJob);
+            try {
+                final Job retriedJob = client.retryJob(RetryJobOptions.newBuilder()
+                    .withJobId(jobId)
+                    .withBuildNumber(options.getBuildNumber())
+                    .withPipelineSlug(options.getPipelineSlug())
+                    .withOrganizationSlug(options.getOrganizationSlug())
+                    .build()
+                );
+                updatedJobs.put(jobId, retriedJob);
+            } catch (final BuildkiteException error) {
+                if (options.isThrowOnError()) {
+                    throw error;
+                }
+                errors.put(jobId, error);
+            }
         });
-        return new MultipleRetriedJobsResults(updatedJobs);
+        return new MultipleRetriedJobsResults(updatedJobs, errors);
     }
 }

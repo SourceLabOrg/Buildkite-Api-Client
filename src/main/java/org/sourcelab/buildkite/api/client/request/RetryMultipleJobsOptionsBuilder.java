@@ -28,6 +28,7 @@ public final class RetryMultipleJobsOptionsBuilder {
     private String pipelineSlug = null;
     private Long buildNumber = null;
     private Set<String> jobIds = new HashSet<>();
+    private boolean throwOnError = true;
 
     public RetryMultipleJobsOptionsBuilder() {
     }
@@ -57,6 +58,11 @@ public final class RetryMultipleJobsOptionsBuilder {
         return this;
     }
 
+    public RetryMultipleJobsOptionsBuilder withThrowExceptionOnError(final boolean throwExceptionOnError) {
+        this.throwOnError = throwExceptionOnError;
+        return this;
+    }
+
     /**
      * Create new {@link RetryMultipleJobsOptions} instance.
      * @return Create new {@link RetryMultipleJobsOptions} instance.
@@ -75,6 +81,6 @@ public final class RetryMultipleJobsOptionsBuilder {
         if (jobIds.isEmpty()) {
             throw new BuilderValidationException("At least one JobId must be provided.");
         }
-        return new RetryMultipleJobsOptions(organizationSlug, pipelineSlug, buildNumber, jobIds);
+        return new RetryMultipleJobsOptions(organizationSlug, pipelineSlug, buildNumber, jobIds, throwOnError);
     }
 }

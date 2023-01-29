@@ -29,6 +29,7 @@ public class RetryMultipleJobsOptions {
     private final String pipelineSlug;
     private final long buildNumber;
     private final Set<String> jobIds;
+    private final boolean throwOnError;
 
     /**
      * Builder instance for {@link RetryMultipleJobsOptions}.
@@ -41,11 +42,12 @@ public class RetryMultipleJobsOptions {
     /**
      * Constructor.
      */
-    public RetryMultipleJobsOptions(final String organizationSlug, final String pipelineIdSlug, final long buildNumber, final Collection<String> jobIds) {
+    public RetryMultipleJobsOptions(final String organizationSlug, final String pipelineIdSlug, final long buildNumber, final Collection<String> jobIds, final boolean throwOnError) {
         this.organizationSlug = organizationSlug;
         this.pipelineSlug = pipelineIdSlug;
         this.buildNumber = buildNumber;
         this.jobIds = new HashSet<>(jobIds);
+        this.throwOnError = throwOnError;
     }
 
     public String getOrganizationSlug() {
@@ -64,6 +66,17 @@ public class RetryMultipleJobsOptions {
         return jobIds;
     }
 
+    /**
+     * @return If true, if any single request fails, it will not process the remaining requests and immediately
+     * throw an exception.
+     *
+     * If false, any errors will be captured by the return result, and further requests will continue.
+     *
+     */
+    public boolean isThrowOnError() {
+        return throwOnError;
+    }
+
     @Override
     public String toString() {
         return "RetryMultipleJobsOptions{"
@@ -71,6 +84,7 @@ public class RetryMultipleJobsOptions {
             + "\n\tpipelineSlug='" + pipelineSlug + '\''
             + "\n\tbuildNumber=" + buildNumber
             + "\n\tjobIds=" + jobIds
+            + "\n\tthrowOnError=" + throwOnError
             + "\n}";
     }
 }
