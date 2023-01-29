@@ -171,7 +171,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M7</version>
                 <configuration>
-                    <argLine>-Xmx256M</argLine>
+                    <argLine>-Xmx128M</argLine>
                     <skipTests>${skipTests}</skipTests>
                     <runOrder>alphabetical</runOrder>
 
