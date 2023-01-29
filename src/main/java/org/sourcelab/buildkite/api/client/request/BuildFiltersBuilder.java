@@ -214,7 +214,7 @@ public final class BuildFiltersBuilder {
      * Filters the results by the given build state.
      * The finished state is a shortcut to automatically search for builds with passed, failed, blocked, canceled states.
      *
-     * See also {@link this#withStateChooser()}.
+     * See also {@link BuildFiltersBuilder#withStateChooser()}.
      *
      * Valid states: running, scheduled, passed, failing, failed, blocked, canceled, canceling, skipped, not_run, finished
      * @param state Filters the results by the given build state.
