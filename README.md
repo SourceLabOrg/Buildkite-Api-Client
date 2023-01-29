@@ -101,6 +101,12 @@ Public methods available on BuildkiteClient can be [found here](src/main/java/or
 - [User](https://buildkite.com/docs/apis/rest-api/user)
   - [Get the current user](https://buildkite.com/docs/apis/rest-api/user#get-the-current-user)
 
+**Not all endpoints implemented yet**
+
+It should be noted that not all REST endpoints are currently implemented. If you require an end point not yet supported, either submit an issue with a feature request, or submit a pull request implementing it.
+
+The functionality that exists in the library should be considered stable, and every attempt will be made to avoid breaking backwards
+compatibility as the library is expanded. 
 
 # Contributing
 
@@ -128,12 +134,6 @@ We love contributions, but it's important that your pull request adhere to some 
 - Great inline comments.
 
 # Other Notes
-
-## Not all endpoints supported yet.
-While the functionality that exists in the library should be considered stable, and every attempt will be made to avoid breaking backwards
-compatibility as the library is expanded, it should be noted that not all REST endpoints are currently implemented.
-
-If you require an end point not yet supported, either submit an issue with a feature request, or submit a pull request implementing it.
 
 ## Releasing
 
