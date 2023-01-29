@@ -75,6 +75,33 @@ if (buildsResult.hasNextPage()) {
 
 Public methods available on BuildkiteClient can be [found here](src/main/java/org/sourcelab/buildkite/api/client/BuildkiteClient.java#L111)
 
+## Endpoints Supported
+### Pipelines API
+- [Access Token](https://buildkite.com/docs/apis/rest-api/access-token)
+  - [Get the current token](https://buildkite.com/docs/apis/rest-api/access-token#get-the-current-token).
+  - [Revoke the current token](https://buildkite.com/docs/apis/rest-api/access-token#revoke-the-current-token).
+- [Organizations](https://buildkite.com/docs/apis/rest-api/organizations)
+  - [List organizations](https://buildkite.com/docs/apis/rest-api/organizations#list-organizations)
+  - [Get an organization](https://buildkite.com/docs/apis/rest-api/organizations#get-an-organization)
+- [Pipelines](https://buildkite.com/docs/apis/rest-api/pipelines)
+  - [List pipelines](https://buildkite.com/docs/apis/rest-api/pipelines#list-pipelines)
+  - [Get a pipeline](https://buildkite.com/docs/apis/rest-api/pipelines#get-a-pipeline)
+- [Builds](https://buildkite.com/docs/apis/rest-api/builds)
+  - [List all builds](https://buildkite.com/docs/apis/rest-api/builds#list-all-builds)
+  - [List builds for an organization](https://buildkite.com/docs/apis/rest-api/builds#list-builds-for-an-organization)
+  - [List builds for a pipeline](https://buildkite.com/docs/apis/rest-api/builds#list-builds-for-a-pipeline)
+  - [Get a build](https://buildkite.com/docs/apis/rest-api/builds#get-a-build)
+  - [Create a build](https://buildkite.com/docs/apis/rest-api/builds#create-a-build)
+  - [Cancel a build](https://buildkite.com/docs/apis/rest-api/builds#cancel-a-build)
+  - [Rebuild a build](https://buildkite.com/docs/apis/rest-api/builds#rebuild-a-build)
+- [Jobs](https://buildkite.com/docs/apis/rest-api/jobs)
+  - [Retry a job](https://buildkite.com/docs/apis/rest-api/jobs#retry-a-job)
+- [Emojis](https://buildkite.com/docs/apis/rest-api/emojis)
+  - [List emojis](https://buildkite.com/docs/apis/rest-api/emojis#list-emojis)
+- [User](https://buildkite.com/docs/apis/rest-api/user)
+  - [Get the current user](https://buildkite.com/docs/apis/rest-api/user#get-the-current-user)
+
+
 # Contributing
 
 Found a bug? Think you've got an awesome feature you want to add? We welcome contributions!
