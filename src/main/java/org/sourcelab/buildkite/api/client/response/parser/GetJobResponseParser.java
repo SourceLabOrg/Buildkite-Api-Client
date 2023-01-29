@@ -19,7 +19,6 @@ package org.sourcelab.buildkite.api.client.response.parser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
-import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.Job;
 
 public class GetJobResponseParser implements ResponseParser<Job> {

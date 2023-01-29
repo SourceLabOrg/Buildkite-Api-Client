@@ -31,7 +31,6 @@ import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.GetBuildFilters;
 import org.sourcelab.buildkite.api.client.request.HttpMethod;
 import org.sourcelab.buildkite.api.client.request.PipelineFilters;
-import org.sourcelab.buildkite.api.client.request.Request;
 import org.sourcelab.buildkite.api.client.request.RequestParameter;
 import org.sourcelab.buildkite.api.client.request.RequestParameters;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
@@ -48,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
