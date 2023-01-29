@@ -47,7 +47,9 @@ final CurrentUserResponse myUser = client.getUser();
 final ListOrganizationsResponse organizations = client.listOrganizations();
 
 /*
- * To search for builds:   
+ * To search for builds:  
+ * https://buildkite.com/docs/apis/rest-api/builds#list-all-builds   
+ */
  */
 final BuildFilters filters = BuildFilters.newBuilder()
     // Retrieve 1st page, with each page having 25 results
@@ -60,10 +62,10 @@ final BuildFilters filters = BuildFilters.newBuilder()
 final ListBuildsResponse buildsResult = client.listBuilds(filters);
 
 /*
- * To retrieve the 3rd page of the above query simply do:   
+ * To retrieve the 2n page of the above query simply do:   
  */
 if (buildsResult.hasNextPage()) {
-    final ListBuildsResponse buildsPage2 = client.nextPage(buildsPage1);
+    final ListBuildsResponse buildsPage2 = client.nextPage(buildsResult);
 }
 
 /*
@@ -100,6 +102,11 @@ We love contributions, but it's important that your pull request adhere to some 
 
 # Other Notes
 
+## Not all endpoints supported yet.
+While the functionality that exists in the library should be considered stable, and every attempt will be made to avoid breaking backwards
+compatibility as the library is expanded, it should be noted that not all REST endpoints are currently implemented.
+
+If you require an end point not yet supported, either submit an issue with a feature request, or submit a pull request implementing it.
 
 ## Releasing
 
