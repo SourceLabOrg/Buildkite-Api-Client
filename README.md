@@ -62,7 +62,7 @@ final BuildFilters filters = BuildFilters.newBuilder()
 final ListBuildsResponse buildsResult = client.listBuilds(filters);
 
 /*
- * To retrieve the 2n page of the above query simply do:   
+ * To retrieve the 2nd page of the above query simply do:   
  */
 if (buildsResult.hasNextPage()) {
     final ListBuildsResponse buildsPage2 = client.nextPage(buildsResult);
