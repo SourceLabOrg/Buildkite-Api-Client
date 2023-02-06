@@ -12,7 +12,7 @@ This client library is released on Maven Central.  Add a new dependency to your 
 <dependency>
     <groupId>org.sourcelab</groupId>
     <artifactId>buildkite-api-client</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 

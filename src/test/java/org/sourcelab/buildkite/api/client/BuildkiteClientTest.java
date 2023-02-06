@@ -37,6 +37,7 @@ import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
+import org.sourcelab.buildkite.api.client.response.Job;
 import org.sourcelab.buildkite.api.client.response.ListBuildsResponse;
 import org.sourcelab.buildkite.api.client.response.ListPipelinesResponse;
 import org.sourcelab.buildkite.api.client.response.MetaResponse;
@@ -504,12 +505,46 @@ public class BuildkiteClientTest {
         // Spot check
         assertEquals("build-id", build.getId());
         assertEquals("failed", build.getState());
+        assertNotNull(build.getCreatedAt());
+        assertNotNull(build.getScheduledAt());
+        assertNotNull(build.getStartedAt());
+        assertNotNull(build.getFinishedAt());
+
+        // Creator
         assertEquals("creator-id", build.getCreator().getId());
+
+        // Pipeline
         assertEquals("pipeline-id", build.getPipeline().getId());
         assertEquals("Run Tests", build.getPipeline().getName());
+
+        // Jobs
         assertEquals(4, build.getJobs().size());
-        assertEquals("Compile & Verify", build.getJobs().get(0).getName());
+
+        // Job 0
+        Job job = build.getJobs().get(0);
+        assertEquals("Compile & Verify", job.getName());
+        assertNotNull(job.getCreatedAt());
+        assertNotNull(job.getScheduledAt());
+        assertNotNull(job.getFinishedAt());
+        assertNotNull(job.getStartedAt());
+        assertEquals(0, job.getExitStatus());
+        assertFalse(job.isRetried());
+        assertNull(job.getRetriedInJobId());
+        assertEquals(0, job.getRetriesCount());
+
+        // Job 1
+        job = build.getJobs().get(1);
         assertEquals("Run tests", build.getJobs().get(1).getName());
+        assertNotNull(job.getCreatedAt());
+        assertNotNull(job.getScheduledAt());
+        assertNotNull(job.getFinishedAt());
+        assertNotNull(job.getStartedAt());
+        assertEquals(0, job.getExitStatus());
+        assertFalse(job.isRetried());
+        assertNull(job.getRetriedInJobId());
+        assertEquals(4, job.getRetriesCount());
+
+
         assertEquals(null, build.getJobs().get(2).getName());
         assertEquals("Annotate", build.getJobs().get(3).getName());
     }

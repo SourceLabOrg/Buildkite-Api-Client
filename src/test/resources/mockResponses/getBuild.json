@@ -229,7 +229,7 @@
     "expired_at": null,
     "retried": false,
     "retried_in_job_id": null,
-    "retries_count": null,
+    "retries_count": 4,
     "retry_type": null,
     "parallel_group_index": null,
     "parallel_group_total": null,
