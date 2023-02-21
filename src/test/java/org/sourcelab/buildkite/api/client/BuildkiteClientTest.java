@@ -27,6 +27,7 @@ import org.sourcelab.buildkite.api.client.exception.NotFoundException;
 import org.sourcelab.buildkite.api.client.http.Client;
 import org.sourcelab.buildkite.api.client.http.ClientFactory;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.request.AnnotationFilters;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.GetBuildFilters;
 import org.sourcelab.buildkite.api.client.request.HttpMethod;
@@ -34,6 +35,9 @@ import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.request.RequestParameter;
 import org.sourcelab.buildkite.api.client.request.RequestParameters;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.Annotation;
+import org.sourcelab.buildkite.api.client.response.AnnotationStyle;
+import org.sourcelab.buildkite.api.client.response.AnnotationsForBuildResponse;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
@@ -291,6 +295,55 @@ public class BuildkiteClientTest {
         assertEquals("100.24.182.113", response.getWebhookIps().get(0));
         assertEquals("35.172.45.249", response.getWebhookIps().get(1));
         assertEquals("54.85.125.32", response.getWebhookIps().get(2));
+    }
+
+    /**
+     * Verifies the {@link BuildkiteClient#getMeta()} request and response parsing.
+     */
+    @Test
+    void getAnnotationsForBuild() {
+        // Setup mock expectations.
+        setupMockResponse(
+            "/v2/organizations/my-org-slug/pipelines/my-pipeline-slug/builds/123/annotations",
+            HttpMethod.GET,
+            RequestParameters.newBuilder()
+                .withParameter("per_page", 5)
+                .withParameter("page", 3)
+                .build(),
+            200,
+            "annotations.json"
+        );
+
+        // Call method under test.
+        final AnnotationFilters filters = AnnotationFilters.newBuilder()
+            .withOrgIdSlug("my-org-slug")
+            .withPipelineIdSlug("my-pipeline-slug")
+            .withBuildNumber(123L)
+            .withPageOptions(3, 5)
+            .build();
+
+        // Call method under test
+        final AnnotationsForBuildResponse response = client.getAnnotationsForBuild(filters);
+
+        // Verify response.
+        assertNotNull(response);
+        assertEquals(2, response.getAnnotations().size());
+
+        final Annotation annotation1 = response.getAnnotations().get(0);
+        assertEquals("de0d4ab5-6360-467a-a34b-e5ef5db5320d", annotation1.getId());
+        assertEquals("default", annotation1.getContext());
+        assertEquals(AnnotationStyle.info, annotation1.getStyle());
+        assertEquals("<h1>My Markdown Heading</h1>\n<img src=\"artifact://indy.png\" alt=\"Belongs in a museum\" height=250 />", annotation1.getBodyHtml());
+        assertEquals("2019-04-09T18:07:15.775Z[UTC]", annotation1.getCreatedAt().toString());
+        assertEquals("2019-08-06T20:58:49.396Z[UTC]", annotation1.getUpdatedAt().toString());
+
+        final Annotation annotation2 = response.getAnnotations().get(1);
+        assertEquals("5b3ceff6-78cb-4fe9-88ae-51be5f145977", annotation2.getId());
+        assertEquals("coverage", annotation2.getContext());
+        assertEquals(AnnotationStyle.warning, annotation2.getStyle());
+        assertEquals("Read the <a href=\"artifact://coverage/index.html\">uploaded coverage report</a>", annotation2.getBodyHtml());
+        assertEquals("2019-04-09T18:07:16.320Z[UTC]", annotation2.getCreatedAt().toString());
+        assertEquals("2019-04-09T18:07:16.320Z[UTC]", annotation2.getUpdatedAt().toString());
     }
 
     /**

@@ -27,6 +27,7 @@ import org.sourcelab.buildkite.api.client.exception.InvalidRequestException;
 import org.sourcelab.buildkite.api.client.exception.NotFoundException;
 import org.sourcelab.buildkite.api.client.http.Client;
 import org.sourcelab.buildkite.api.client.http.HttpResult;
+import org.sourcelab.buildkite.api.client.request.AnnotationFilters;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.BuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.CancelBuildRequest;
@@ -35,6 +36,7 @@ import org.sourcelab.buildkite.api.client.request.CreateBuildOptionsBuilder;
 import org.sourcelab.buildkite.api.client.request.CreateBuildRequest;
 import org.sourcelab.buildkite.api.client.request.DeleteAccessTokenRequest;
 import org.sourcelab.buildkite.api.client.request.GetAccessTokenRequest;
+import org.sourcelab.buildkite.api.client.request.GetAnnotationsForBuildRequest;
 import org.sourcelab.buildkite.api.client.request.GetBuildFilters;
 import org.sourcelab.buildkite.api.client.request.GetBuildFiltersBuilder;
 import org.sourcelab.buildkite.api.client.request.GetBuildRequest;
@@ -62,6 +64,7 @@ import org.sourcelab.buildkite.api.client.request.UnblockJobOptions;
 import org.sourcelab.buildkite.api.client.request.UnblockJobOptionsBuilder;
 import org.sourcelab.buildkite.api.client.request.UnblockJobRequest;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.AnnotationsForBuildResponse;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
@@ -497,6 +500,19 @@ public class BuildkiteClient {
      */
     public List<Emoji> listEmojis(final String orgIdSlug) {
         return executeRequest(new ListEmojisRequest(orgIdSlug));
+    }
+
+    /**
+     * Retrieve annotations for a given build.
+     *
+     * @see <a href="https://buildkite.com/docs/apis/rest-api/annotations#list-annotations-for-a-build">https://buildkite.com/docs/apis/rest-api/annotations#list-annotations-for-a-build</a>
+     *
+     * @param options Defines which build to retrieve annotations for.
+     * @return Annotations associated with the build.
+     * @throws BuildkiteException if API returns an error response.
+     */
+    public AnnotationsForBuildResponse getAnnotationsForBuild(final AnnotationFilters options) {
+        return executeRequest(new GetAnnotationsForBuildRequest(options));
     }
 
     /**

@@ -23,12 +23,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sourcelab.buildkite.api.client.request.AnnotationFilters;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.CreateBuildOptions;
 import org.sourcelab.buildkite.api.client.request.CreateBuildOptionsBuilder;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.request.PipelineFilters;
 import org.sourcelab.buildkite.api.client.response.AccessTokenResponse;
+import org.sourcelab.buildkite.api.client.response.AnnotationsForBuildResponse;
 import org.sourcelab.buildkite.api.client.response.Build;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
@@ -70,6 +72,7 @@ class BuildkiteClientIntegrationTest {
     private final String orgIdSlug = "sourcelaborg";
     private final String userId = "0185763d-3c4e-4489-9ac5-0634fc300173";
     private final String pipelineIdSlug = "run-tests";
+    private final long buildNumber = 215;
 
     @BeforeEach
     void setUp() {
@@ -275,7 +278,7 @@ class BuildkiteClientIntegrationTest {
 
     @Test
     void rebuildBuild() {
-        final Build build = client.rebuildBuild(orgIdSlug, pipelineIdSlug, 10);
+        final Build build = client.rebuildBuild(orgIdSlug, pipelineIdSlug, buildNumber);
         logger.info("Build: {}", build);
     }
 
@@ -293,5 +296,18 @@ class BuildkiteClientIntegrationTest {
 
         final Build build = client.createBuild(builder);
         logger.info("Build: {}", build);
+    }
+
+    @Test
+    void getAnnotationsForBuild() {
+        // Get annotations
+        final AnnotationFilters options = AnnotationFilters.newBuilder()
+            .withOrgIdSlug(orgIdSlug)
+            .withPipelineIdSlug(pipelineIdSlug)
+            .withBuildNumber(buildNumber)
+            .build();
+
+        final AnnotationsForBuildResponse annotations = client.getAnnotationsForBuild(options);
+        logger.info("Found: {}", annotations);
     }
 }

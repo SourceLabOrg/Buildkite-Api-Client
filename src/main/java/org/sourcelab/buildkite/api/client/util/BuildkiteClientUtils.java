@@ -19,8 +19,10 @@ package org.sourcelab.buildkite.api.client.util;
 
 import org.sourcelab.buildkite.api.client.BuildkiteClient;
 import org.sourcelab.buildkite.api.client.exception.BuildkiteException;
+import org.sourcelab.buildkite.api.client.request.AnnotationFilters;
 import org.sourcelab.buildkite.api.client.request.BuildFilters;
 import org.sourcelab.buildkite.api.client.request.Filters;
+import org.sourcelab.buildkite.api.client.request.GetAnnotationsForBuildRequest;
 import org.sourcelab.buildkite.api.client.request.ListBuildsRequest;
 import org.sourcelab.buildkite.api.client.request.ListOrganizationsRequest;
 import org.sourcelab.buildkite.api.client.request.ListPipelinesRequest;
@@ -63,7 +65,7 @@ public class BuildkiteClientUtils {
      * @param requestClass The request class.
      * @param objectClass The object within the Response to return.
      * @param client The BuildkiteClient to execute the requests against.
-     * @return List of Builds sorted from NEWEST to OLDEST.
+     * @return List of Objects sorted from OLDEST to NEWEST.
      * @throws BuildkiteException on errors.
      */
     public static <REQUEST, OBJECT> List<OBJECT> retrieveAll(
@@ -79,8 +81,10 @@ public class BuildkiteClientUtils {
             request = (PageableRequest<REQUEST>) new ListOrganizationsRequest((OrganizationFilters) filters);
         } else if (filters instanceof PipelineFilters) {
             request = (PageableRequest<REQUEST>) new ListPipelinesRequest((PipelineFilters) filters);
+        } else if (filters instanceof AnnotationFilters) {
+            request = (PageableRequest<REQUEST>) new GetAnnotationsForBuildRequest((AnnotationFilters) filters);
         } else {
-            throw new RuntimeException("Unknown type.");
+            throw new RuntimeException("Unknown type pass " + filters.getClass().getSimpleName());
         }
 
         final List<OBJECT> entries = new ArrayList<>();

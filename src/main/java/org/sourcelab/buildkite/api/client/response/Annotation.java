@@ -25,7 +25,7 @@ import java.time.ZonedDateTime;
 public class Annotation {
     private final String id;
     private final String context;
-    private final String style;
+    private final AnnotationStyle style;
     private final String bodyHtml;
     private final ZonedDateTime createdAt;
     private final ZonedDateTime updatedAt;
@@ -44,7 +44,7 @@ public class Annotation {
     ) {
         this.id = id;
         this.context = context;
-        this.style = style;
+        this.style = (style != null) ? AnnotationStyle.fromString(style) : null;
         this.bodyHtml = bodyHtml;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -58,7 +58,7 @@ public class Annotation {
         return context;
     }
 
-    public String getStyle() {
+    public AnnotationStyle getStyle() {
         return style;
     }
 
