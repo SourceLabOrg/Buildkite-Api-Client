@@ -29,7 +29,7 @@ public class Build {
     private final String url;
     private final String webUrl;
     private final long number;
-    private final String state;
+    private final BuildState state;
     private final boolean blocked;
     private final String message;
     private final String commit;
@@ -81,7 +81,7 @@ public class Build {
         this.url = url;
         this.webUrl = webUrl;
         this.number = number;
-        this.state = state;
+        this.state = BuildState.createFromString(state);
         this.blocked = blocked;
         this.message = message;
         this.commit = commit;
@@ -119,7 +119,7 @@ public class Build {
         return number;
     }
 
-    public String getState() {
+    public BuildState getState() {
         return state;
     }
 
