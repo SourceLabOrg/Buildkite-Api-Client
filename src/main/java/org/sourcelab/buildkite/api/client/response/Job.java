@@ -28,7 +28,7 @@ public class Job {
     private final String type;
     private final String name;
     private final String stepKey;
-    private final String state;
+    private final JobState state;
     private final String webUrl;
     private final String logUrl;
     private final String rawLogUrl;
@@ -94,7 +94,7 @@ public class Job {
         this.type = type;
         this.name = name;
         this.stepKey = stepKey;
-        this.state = state;
+        this.state = JobState.createFromString(state);
         this.webUrl = webUrl;
         this.logUrl = logUrl;
         this.rawLogUrl = rawLogUrl;
@@ -136,7 +136,7 @@ public class Job {
         return stepKey;
     }
 
-    public String getState() {
+    public JobState getState() {
         return state;
     }
 

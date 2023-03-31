@@ -39,6 +39,7 @@ import org.sourcelab.buildkite.api.client.response.Annotation;
 import org.sourcelab.buildkite.api.client.response.AnnotationStyle;
 import org.sourcelab.buildkite.api.client.response.AnnotationsForBuildResponse;
 import org.sourcelab.buildkite.api.client.response.Build;
+import org.sourcelab.buildkite.api.client.response.BuildState;
 import org.sourcelab.buildkite.api.client.response.CurrentUserResponse;
 import org.sourcelab.buildkite.api.client.response.Emoji;
 import org.sourcelab.buildkite.api.client.response.Job;
@@ -375,7 +376,7 @@ public class BuildkiteClientTest {
         Build build = response.getBuilds().get(0);
         assertEquals("abc-id-1", build.getId());
         assertEquals(8, build.getNumber());
-        assertEquals("scheduled", build.getState());
+        assertEquals(BuildState.SCHEDULED, build.getState());
         assertNotNull(build.getAuthor());
         assertEquals("First Last", build.getAuthor().getName());
         assertEquals("first.last@email.com", build.getAuthor().getEmail());
@@ -404,7 +405,7 @@ public class BuildkiteClientTest {
         build = response.getBuilds().get(1);
         assertEquals("01858542", build.getId());
         assertEquals(7, build.getNumber());
-        assertEquals("scheduled", build.getState());
+        assertEquals(BuildState.SCHEDULED, build.getState());
         assertNotNull(build.getAuthor());
         assertEquals("First Last", build.getAuthor().getName());
         assertEquals("first.last@email.com", build.getAuthor().getEmail());
@@ -557,7 +558,7 @@ public class BuildkiteClientTest {
 
         // Spot check
         assertEquals("build-id", build.getId());
-        assertEquals("failed", build.getState());
+        assertEquals(BuildState.FAILED, build.getState());
         assertNotNull(build.getCreatedAt());
         assertNotNull(build.getScheduledAt());
         assertNotNull(build.getStartedAt());
@@ -633,7 +634,7 @@ public class BuildkiteClientTest {
 
         // Spot check
         assertEquals("build-id", build.getId());
-        assertEquals("failed", build.getState());
+        assertEquals(BuildState.FAILED, build.getState());
         assertEquals("creator-id", build.getCreator().getId());
         assertEquals("pipeline-id", build.getPipeline().getId());
         assertEquals("Run Tests", build.getPipeline().getName());
