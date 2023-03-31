@@ -29,6 +29,7 @@ public enum JobState {
     UNBLOCKED_FAILED,
     TIMED_OUT,
     BROKEN,
+    FAILING,
     FAILED,
     LIMITING,
     LIMITED,
@@ -40,6 +41,7 @@ public enum JobState {
     CANCELING,
     PASSED,
     FINISHED,
+    NOT_RUN,
 
     // Fall through value.
     UNKNOWN;
@@ -77,6 +79,8 @@ public enum JobState {
                 return TIMED_OUT;
             case "broken":
                 return BROKEN;
+            case "failing":
+                return FAILING;
             case "failed":
                 return FAILED;
 
@@ -102,6 +106,8 @@ public enum JobState {
                 return PASSED;
             case "finished":
                 return FINISHED;
+            case "not_run":
+                return NOT_RUN;
 
             default:
                 return UNKNOWN;
